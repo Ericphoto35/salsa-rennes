@@ -19,22 +19,22 @@ export default function Home() {
 
       <Navbar isLoggedIn={isLoggedIn} />
 
-      <main className="min-h-screen flex flex-col items-center justify-center px-4 pt-16">
+      <main className="min-h-screen flex flex-col items-center justify-center px-4 pt-20 md:pt-16">
         <div className="text-center">
-          <div className="mb-8">
+          <div className="mb-6 md:mb-8 w-[280px] md:w-[400px] relative mx-auto">
             <Image
               src="/images/logo.png"
               alt="Qué Rico Mambo Salsa"
               width={400}
               height={200}
-              className="mx-auto"
+              className="w-full h-auto"
               priority
             />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-[#f6bc7c]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 md:mb-6 text-[#f6bc7c] leading-tight">
             Apprenez la Salsa à Rennes
           </h1>
-          <p className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto text-white/90">
+          <p className="text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto text-white/90 px-2">
             Découvrez notre méthode unique d'apprentissage, du niveau débutant à avancé
           </p>
           
@@ -46,7 +46,7 @@ export default function Home() {
               Commencer maintenant
             </Link>
             
-            <div className="flex justify-center gap-8 mt-8">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 mt-6 sm:mt-8">
               <Link 
                 href="/niveaux/debutant" 
                 className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 transition-colors"
@@ -69,9 +69,9 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-16 text-center">
+        <div className="mt-12 md:mt-16 text-center px-2">
           <h2 className="text-2xl font-semibold mb-4 text-[#f6bc7c]">Pourquoi nous choisir ?</h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
             <div className="p-4">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <FaGraduationCap className="text-[#f6bc7c] text-3xl" />
@@ -96,7 +96,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-16 mb-16">
+        <div className="mt-12 md:mt-16 mb-12 md:mb-16 w-full">
           <GoogleReviews />
         </div>
       </main>

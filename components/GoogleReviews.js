@@ -35,28 +35,29 @@ export default function GoogleReviews() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4">
-      <div className="flex items-center justify-center gap-2 mb-8">
-        <FaGoogle className="text-[#f6bc7c] text-3xl" />
-        <h2 className="text-2xl font-semibold text-[#f6bc7c]">Avis de nos clients</h2>
+    <div className="w-full max-w-6xl mx-auto px-4 py-8 md:py-12">
+      <div className="flex items-center justify-center gap-2 mb-6 md:mb-8">
+        <FaGoogle className="text-[#f6bc7c] text-2xl md:text-3xl" />
+        <h2 className="text-xl md:text-2xl font-semibold text-[#f6bc7c]">Avis de nos clients</h2>
       </div>
       
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={30}
+        spaceBetween={16}
         slidesPerView={1}
         navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         breakpoints={{
-          640: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 }
+          480: { slidesPerView: 1.2, spaceBetween: 20 },
+          640: { slidesPerView: 2, spaceBetween: 24 },
+          1024: { slidesPerView: 3, spaceBetween: 30 }
         }}
-        className="py-8"
+        className="py-4 md:py-8"
       >
         {reviews.map((review, index) => (
           <SwiperSlide key={index}>
-            <div className="bg-[#363636] p-6 rounded-lg shadow-lg h-full">
+            <div className="bg-[#363636] p-4 md:p-6 rounded-lg shadow-lg h-full">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-[#f6bc7c] flex items-center justify-center text-[#2b2b2b] font-bold text-xl">
                   {review.author_name?.[0] || '?'}
