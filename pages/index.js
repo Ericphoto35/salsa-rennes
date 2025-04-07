@@ -2,8 +2,13 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaGraduationCap, FaUserTie, FaClock } from 'react-icons/fa';
+import Navbar from '../components/Navbar';
+import GoogleReviews from '../components/GoogleReviews';
 
 export default function Home() {
+  // TODO: Implement actual authentication logic
+  const isLoggedIn = false;
+
   return (
     <div className="min-h-screen bg-[#2b2b2b]">
       <Head>
@@ -12,7 +17,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main className="min-h-screen flex flex-col items-center justify-center px-4">
+      <Navbar isLoggedIn={isLoggedIn} />
+
+      <main className="min-h-screen flex flex-col items-center justify-center px-4 pt-16">
         <div className="text-center">
           <div className="mb-8">
             <Image
@@ -87,6 +94,10 @@ export default function Home() {
               <p className="text-white/90">Apprenez à votre rythme, où que vous soyez</p>
             </div>
           </div>
+        </div>
+
+        <div className="mt-16 mb-16">
+          <GoogleReviews />
         </div>
       </main>
     </div>

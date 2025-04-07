@@ -1,44 +1,51 @@
 import Head from 'next/head';
+import Navbar from '../../components/Navbar';
+import ProtectedRoute from '../../components/ProtectedRoute';
 
 const videos = [
-  { id: '3', title: 'Figures intermédiaires', url: 'https://www.youtube.com/embed/XXXXX' },
-  { id: '4', title: 'Combinaisons', url: 'https://www.youtube.com/embed/XXXXX' },
+  { id: '1', title: 'Figures intermédiaires', url: 'https://www.youtube.com/embed/XXXXX' },
+  { id: '2', title: 'Combinaisons de pas', url: 'https://www.youtube.com/embed/XXXXX' },
 ];
 
 export default function Intermediaire() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Head>
-        <title>Niveau Intermédiaire - Salsa Rennes</title>
-        <meta name="description" content="Cours de salsa de niveau intermédiaire à Rennes" />
-      </Head>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-[#2b2b2b]">
+        <Head>
+          <title>Niveau Intermédiaire - Salsa Rennes</title>
+          <meta name="description" content="Cours de salsa niveau intermédiaire à Rennes" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
 
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600">
-          Niveau Intermédiaire
-        </h1>
+        <Navbar />
 
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-6">
-            {videos.map((video) => (
-              <div key={video.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="relative pt-[56.25%]">
-                  <iframe
-                    className="absolute top-0 left-0 w-full h-full"
-                    src={video.url}
-                    title={video.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+        <main className="container mx-auto px-4 py-12 pt-24">
+          <h1 className="text-4xl font-bold text-center mb-12 text-[#f6bc7c]">
+            Niveau Intermédiaire
+          </h1>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8">
+              {videos.map((video) => (
+                <div key={video.id} className="bg-[#2b2b2b] rounded-lg shadow-xl overflow-hidden border border-[#f6bc7c]/20">
+                  <div className="relative pt-[56.25%]">
+                    <iframe
+                      className="absolute top-0 left-0 w-full h-full"
+                      src={video.url}
+                      title={video.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h2 className="text-xl font-semibold text-[#f6bc7c]">{video.title}</h2>
+                  </div>
                 </div>
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold text-gray-800">{video.title}</h2>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }

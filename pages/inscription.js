@@ -1,14 +1,22 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import Navbar from '../components/Navbar';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Inscription() {
+  const router = useRouter();
+  const { signUp, user } = useAuth();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
-    nom: '',
-    prenom: '',
+    fullName: '',
+    phone: '',
     email: '',
-    telephone: '',
-    niveau: 'debutant'
+    password: '',
+    confirmPassword: '',
   });
 
   const handleChange = (e) => {
@@ -21,128 +29,141 @@ export default function Inscription() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement form submission logic
-    console.log('Form submitted:', formData);
+    if (formData.password !== formData.confirmPassword) {
+      setError('Les mots de passe ne correspondent pas');
+      return;
+    }
+    try {
+      setError('');
+      setLoading(true);
+      const { error } = await signUp(formData);
+      if (error) throw error;
+      router.push('/login?message=Votre compte a été créé et est en attente d\'approbation par un administrateur');
+    } catch (error) {
+      setError('Erreur lors de l\'inscription : ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Si l'utilisateur est déjà connecté, rediriger vers la page d'accueil
+  if (user) {
+    router.push('/');
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-500 to-blue-700">
+    <div className="min-h-screen bg-[#2b2b2b]">
       <Head>
         <title>Inscription - Salsa Rennes</title>
         <meta name="description" content="Inscrivez-vous aux cours de salsa à Rennes" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
-        <Link 
-          href="/"
-          className="absolute top-4 left-4 text-white hover:text-blue-200 transition-colors"
-        >
-          ← Retour à l'accueil
-        </Link>
+      <Navbar isLoggedIn={!!user} />
 
+      <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12 pt-24">
         <div className="w-full max-w-md">
-          <h1 className="text-4xl font-bold text-center text-white mb-8">
+          <h1 className="text-4xl font-bold text-center text-[#f6bc7c] mb-8">
             Rejoignez-nous
           </h1>
 
-          <form 
-            onSubmit={handleSubmit}
-            className="bg-white rounded-lg shadow-xl p-8"
-          >
-            <div className="space-y-6">
-              <div>
-                <label htmlFor="prenom" className="block text-sm font-medium text-gray-700 mb-1">
-                  Prénom
-                </label>
-                <input
-                  type="text"
-                  id="prenom"
-                  name="prenom"
-                  value={formData.prenom}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/50 text-red-500 rounded-md p-4 mb-6">
+              {error}
+            </div>
+          )}
 
-              <div>
-                <label htmlFor="nom" className="block text-sm font-medium text-gray-700 mb-1">
-                  Nom
-                </label>
-                <input
-                  type="text"
-                  id="nom"
-                  name="nom"
-                  value={formData.nom}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="fullName" className="block text-sm font-medium text-[#f6bc7c]">
+                Nom complet
+              </label>
+              <input
+                id="fullName"
+                name="fullName"
+                type="text"
+                required
+                value={formData.fullName}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border border-[#f6bc7c]/20 bg-[#2b2b2b] text-white shadow-sm px-3 py-2 focus:border-[#f6bc7c] focus:outline-none focus:ring-1 focus:ring-[#f6bc7c]"
+              />
+            </div>
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-[#f6bc7c]">
+                Téléphone
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border border-[#f6bc7c]/20 bg-[#2b2b2b] text-white shadow-sm px-3 py-2 focus:border-[#f6bc7c] focus:outline-none focus:ring-1 focus:ring-[#f6bc7c]"
+              />
+            </div>
 
-              <div>
-                <label htmlFor="telephone" className="block text-sm font-medium text-gray-700 mb-1">
-                  Téléphone
-                </label>
-                <input
-                  type="tel"
-                  id="telephone"
-                  name="telephone"
-                  value={formData.telephone}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-[#f6bc7c]">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full rounded-md border border-[#f6bc7c]/20 bg-[#2b2b2b] text-white shadow-sm px-3 py-2 focus:border-[#f6bc7c] focus:outline-none focus:ring-1 focus:ring-[#f6bc7c]"
+              />
+            </div>
 
-              <div>
-                <label htmlFor="niveau" className="block text-sm font-medium text-gray-700 mb-1">
-                  Niveau
-                </label>
-                <select
-                  id="niveau"
-                  name="niveau"
-                  value={formData.niveau}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="debutant">Débutant</option>
-                  <option value="intermediaire">Intermédiaire</option>
-                  <option value="avance">Avancé</option>
-                </select>
-              </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-[#f6bc7c]">
+                Mot de passe
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full rounded-md border border-[#f6bc7c]/20 bg-[#2b2b2b] text-white shadow-sm px-3 py-2 focus:border-[#f6bc7c] focus:outline-none focus:ring-1 focus:ring-[#f6bc7c]"
+              />
+            </div>
 
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors duration-200 font-semibold"
-              >
-                S'inscrire
-              </button>
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-[#f6bc7c]">
+                Confirmer le mot de passe
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full rounded-md border border-[#f6bc7c]/20 bg-[#2b2b2b] text-white shadow-sm px-3 py-2 focus:border-[#f6bc7c] focus:outline-none focus:ring-1 focus:ring-[#f6bc7c]"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Inscription...' : 'S\'inscrire'}
+            </button>
+
+            <div className="text-center text-sm">
+              <Link href="/login" className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 transition-colors">
+                Déjà un compte ? Se connecter
+              </Link>
             </div>
           </form>
-
-          <p className="text-center text-white text-sm mt-4">
-            En vous inscrivant, vous acceptez nos{' '}
-            <Link href="/conditions" className="underline hover:text-blue-200">
-              conditions d'utilisation
-            </Link>
-          </p>
         </div>
       </main>
     </div>
