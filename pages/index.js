@@ -99,6 +99,19 @@ export default function Home() {
         <div className="mt-12 md:mt-16 mb-12 md:mb-16 w-full">
           <GoogleReviews />
         </div>
+
+        <div className="mt-12 md:mt-16 mb-12 md:mb-16 w-full text-center">
+          <h2 className="text-2xl font-semibold mb-6 text-[#f6bc7c]">Notre Association à Rennes</h2>
+          <p className="text-white/90 mb-6">Découvrez notre association de salsa et venez nous rencontrer dans nos différentes salles.</p>
+          <a 
+            href="https://www.quericomambo.fr" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-block bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            Qué Rico Mambo
+          </a>
+        </div>
       </main>
     </div>
   );
