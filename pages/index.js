@@ -13,9 +13,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#2b2b2b]">
       <Head>
         <title>Salsa Rennes - École de danse</title>
-        <html lang="fr" />  
         <meta name="description" content="Apprenez la salsa à Rennes avec nos cours en ligne et en présentiel" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <Navbar isLoggedIn={isLoggedIn} />
