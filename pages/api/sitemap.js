@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const baseUrl = 'https://salsa-rennes.vercel.app';
+  const baseUrl = 'https://salsarennes.fr';
   // N'inclure que les pages publiques
   const pages = [
     '', // Accueil
