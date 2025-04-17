@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
+import Seo from '../components/Seo';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import ProtectedRoute from '../components/ProtectedRoute';
@@ -135,11 +135,13 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-[#2b2b2b]">
-      <Head>
-        <title>Administration - Salsa Rennes</title>
-        <meta name="description" content="Page d'administration Salsa Rennes" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
+      <Seo
+        title="Admin - Salsa Rennes"
+        description="Espace administrateur du site Salsa Rennes. Gérez les utilisateurs, cours et contenus."
+        url="https://salsa-rennes.vercel.app/admin"
+        noIndex={true}
+      />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
 
       <Navbar />
 

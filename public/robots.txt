@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin
+Disallow: /login
+Disallow: /profile
+
+Sitemap: https://salsa-rennes.vercel.app/api/sitemap

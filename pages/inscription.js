@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Head from 'next/head';
+import Seo from '../components/Seo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
@@ -54,11 +54,11 @@ export default function Inscription() {
 
   return (
     <div className="min-h-screen bg-[#2b2b2b]">
-      <Head>
-        <title>Inscription - Salsa Rennes</title>
-        <meta name="description" content="Inscrivez-vous aux cours de salsa à Rennes" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
+      <Seo
+        title="Inscription - Salsa Rennes"
+        description="Inscrivez-vous aux cours de salsa à Rennes. Rejoignez la communauté Salsa Rennes et découvrez nos cours, stages et soirées."
+        url="https://salsa-rennes.vercel.app/inscription"
+      />
 
       <Navbar isLoggedIn={!!user} />
 

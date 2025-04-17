@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Seo from '../components/Seo';
 import Navbar from '../components/Navbar';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,11 +9,13 @@ export default function Profile() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-[#2b2b2b]">
-        <Head>
-          <title>Mon Profil - Salsa Rennes</title>
-          <meta name="description" content="Gérez votre profil Salsa Rennes" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </Head>
+        <Seo
+          title="Mon Profil - Salsa Rennes"
+          description="Gérez votre profil Salsa Rennes. Modifiez vos informations et suivez votre progression."
+          url="https://salsa-rennes.vercel.app/profile"
+          noIndex={true}
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <Navbar />
 

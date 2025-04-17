@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Seo from '../components/Seo';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaGraduationCap, FaUserTie, FaClock } from 'react-icons/fa';
@@ -11,10 +11,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#2b2b2b]">
-      <Head>
-        <title>Salsa Rennes - École de danse</title>
-        <meta name="description" content="Apprenez la salsa à Rennes avec nos cours en ligne et en présentiel" />
-      </Head>
+      <Seo
+        title="Salsa Rennes - École de danse"
+        description="Apprenez la salsa à Rennes avec nos cours en ligne et en présentiel. Cours, événements, stages et soirées pour tous niveaux à Rennes."
+        url="https://salsa-rennes.vercel.app"
+        image="/images/logo.png"
+      />
 
       <Navbar isLoggedIn={isLoggedIn} />
 

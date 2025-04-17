@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Head from 'next/head';
+import Seo from '../components/Seo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
@@ -50,11 +50,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#2b2b2b]">
-      <Head>
-        <title>Connexion - Salsa Rennes</title>
-        <meta name="description" content="Connectez-vous à votre compte Salsa Rennes" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
+      <Seo
+        title="Connexion - Salsa Rennes"
+        description="Connectez-vous à votre compte Salsa Rennes pour accéder à vos cours, votre profil et plus encore."
+        url="https://salsa-rennes.vercel.app/login"
+        noIndex={true}
+      />
 
       <Navbar isLoggedIn={!!user} />
 
