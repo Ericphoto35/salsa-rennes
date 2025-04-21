@@ -57,7 +57,7 @@ export default function Inscription() {
       <Seo
         title="Inscription - Salsa Rennes"
         description="Inscrivez-vous aux cours de salsa à Rennes. Rejoignez la communauté Salsa Rennes et découvrez nos cours, stages et soirées."
-        url="https://salsa-rennes.vercel.app/inscription"
+        url="https://www.salsarennes.fr/inscription"
       />
 
       <Navbar isLoggedIn={!!user} />

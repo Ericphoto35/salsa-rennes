@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const baseUrl = 'https://salsarennes.fr';
+  const baseUrl = 'https://www.salsarennes.fr';
   // N'inclure que les pages publiques
   const pages = [
     '', // Accueil

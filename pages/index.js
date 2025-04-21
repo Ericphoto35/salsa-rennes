@@ -14,7 +14,7 @@ export default function Home() {
       <Seo
         title="Salsa Rennes - École de danse"
         description="Apprenez la salsa à Rennes avec nos cours en ligne et en présentiel. Cours, événements, stages et soirées pour tous niveaux à Rennes."
-        url="https://salsa-rennes.vercel.app"
+        url="https://www.salsarennes.fr"
         image="/images/logo.png"
       />
 

@@ -53,7 +53,7 @@ export default function Login() {
       <Seo
         title="Connexion - Salsa Rennes"
         description="Connectez-vous à votre compte Salsa Rennes pour accéder à vos cours, votre profil et plus encore."
-        url="https://salsa-rennes.vercel.app/login"
+        url="https://www.salsarennes.fr/login"
         noIndex={true}
       />
 

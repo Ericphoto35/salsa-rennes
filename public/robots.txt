@@ -3,4 +3,4 @@ Disallow: /admin
 Disallow: /login
 Disallow: /profile
 
-Sitemap: https://salsarennes.fr/sitemap.xml
+Sitemap: https://www.salsarennes.fr/sitemap.xml

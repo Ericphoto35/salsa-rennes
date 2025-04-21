@@ -12,7 +12,7 @@ export default function Profile() {
         <Seo
           title="Mon Profil - Salsa Rennes"
           description="Gérez votre profil Salsa Rennes. Modifiez vos informations et suivez votre progression."
-          url="https://salsa-rennes.vercel.app/profile"
+          url="https://www.salsarennes.fr/profile"
           noIndex={true}
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -138,7 +138,7 @@ export default function Admin() {
       <Seo
         title="Admin - Salsa Rennes"
         description="Espace administrateur du site Salsa Rennes. Gérez les utilisateurs, cours et contenus."
-        url="https://salsa-rennes.vercel.app/admin"
+        url="https://www.salsarennes.fr/admin"
         noIndex={true}
       />
       <meta name="viewport" content="width=device-width, initial-scale=1" />

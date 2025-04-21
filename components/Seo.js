@@ -3,7 +3,7 @@ import Head from 'next/head';
 export default function Seo({
   title = 'Salsa Rennes',
   description = 'Le site de référence pour la salsa à Rennes : soirées, cours, événements, et plus encore.',
-  url = 'https://salsa-rennes.vercel.app',
+  url = 'https://www.salsarennes.fr',
   image = '/images/og-image.jpg', // À personnaliser
   type = 'website',
   noIndex = false,
