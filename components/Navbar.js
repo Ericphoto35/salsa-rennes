@@ -1,28 +1,51 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../contexts/AuthContext';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes, FaSpinner } from 'react-icons/fa';
 
 export default function Navbar() {
-  const { user, userProfile, loading, signOut } = useAuth();
+  const { user, userProfile, loading, authError, signOut } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [navError, setNavError] = useState('');
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Réinitialiser les erreurs de navigation lorsque l'état d'authentification change
+    if (authError) {
+      setNavError(authError);
+    } else {
+      setNavError('');
+    }
+  }, [authError]);
 
   const handleSignOut = async () => {
-    setIsLoggingOut(true);
-    await signOut();
-    setIsLoggingOut(false);
+    try {
+      setIsLoggingOut(true);
+      setNavError('');
+      await signOut();
+    } catch (error) {
+      console.error('Error in handleSignOut:', error);
+      setNavError('Erreur lors de la déconnexion');
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   // Ne rien afficher jusqu'à ce que le composant soit monté côté client
   if (!mounted) {
     return null;
   }
+  
+  // Fonction pour afficher un indicateur de chargement
+  const renderLoadingState = () => (
+    <div className="flex items-center justify-center text-[#f6bc7c] opacity-70">
+      <FaSpinner className="animate-spin mr-2" />
+      <span>Chargement...</span>
+    </div>
+  );
 
   return (
     <nav className="fixed w-full bg-[#2b2b2b] shadow-lg z-50">
@@ -46,10 +69,22 @@ export default function Navbar() {
               isMenuOpen ? 'flex' : 'hidden'
             } md:flex flex-col md:flex-row absolute md:relative top-16 md:top-0 left-0 w-full md:w-auto bg-[#2b2b2b] md:bg-transparent py-4 md:py-0 px-4 md:px-0 space-y-4 md:space-y-0 md:space-x-4 items-center shadow-lg md:shadow-none`}
           >
-            {!loading ? (
+            {/* Afficher les erreurs de navigation si présentes */}
+            {navError && (
+              <div className="text-red-500 bg-red-500/10 p-2 rounded-md text-sm mb-2 md:mb-0">
+                {navError}
+              </div>
+            )}
+            
+            {loading ? (
+              renderLoadingState()
+            ) : (
               <>
                 {user && userProfile ? (
                   <>
+                    <div className="text-white text-sm mr-4">
+                      {userProfile.full_name || userProfile.email}
+                    </div>
                     {userProfile.is_admin && (
                       <Link
                         href="/admin"
@@ -61,10 +96,11 @@ export default function Navbar() {
                     <button
                       onClick={handleSignOut}
                       disabled={isLoggingOut}
-                      className={`text-[#f6bc7c] hover:text-[#f6bc7c]/80 ${
+                      className={`text-[#f6bc7c] hover:text-[#f6bc7c]/80 flex items-center ${
                         isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
                     >
+                      {isLoggingOut && <FaSpinner className="animate-spin mr-2" />}
                       {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
                     </button>
                   </>
@@ -85,8 +121,6 @@ export default function Navbar() {
                   </>
                 )}
               </>
-            ) : (
-              <div className="text-[#f6bc7c] opacity-50">Chargement...</div>
             )}
           </div>
         </div>

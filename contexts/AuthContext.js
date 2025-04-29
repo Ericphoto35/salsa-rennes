@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase';
 
@@ -8,9 +8,13 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
+  const isMounted = useRef(true);
   const router = useRouter();
 
-  const fetchUserProfile = async (userId) => {
+  const fetchUserProfile = useCallback(async (userId) => {
+    if (!userId) return null;
+    
     try {
       console.log('Fetching user profile for:', userId);
       const { data, error } = await supabase
@@ -25,49 +29,83 @@ export function AuthProvider({ children }) {
       }
 
       console.log('User profile fetched:', data);
-      setUserProfile(data);
+      if (isMounted.current) {
+        setUserProfile(data);
+      }
       return data;
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
-      setUserProfile(null);
+      if (isMounted.current) {
+        setUserProfile(null);
+        setAuthError('Erreur lors de la récupération du profil utilisateur');
+      }
       return null;
     }
-  };
+  }, []);
+
+  // Gestion sécurisée des états d'authentification
+  const safeSetState = useCallback((setter, value) => {
+    if (isMounted.current) {
+      setter(value);
+    }
+  }, []);
+
+  // Réinitialiser les états d'authentification
+  const resetAuthState = useCallback(() => {
+    safeSetState(setUser, null);
+    safeSetState(setUserProfile, null);
+    safeSetState(setAuthError, null);
+  }, [safeSetState]);
+
+  // Gérer la déconnexion en cas d'utilisateur non approuvé
+  const handleUnapprovedUser = useCallback(async () => {
+    console.log('User not approved, signing out');
+    try {
+      await supabase.auth.signOut();
+      resetAuthState();
+      safeSetState(setAuthError, 'Votre compte est en attente d\'approbation par un administrateur.');
+    } catch (error) {
+      console.error('Error during unapproved user signout:', error);
+      resetAuthState();
+    }
+  }, [resetAuthState, safeSetState]);
 
   // Initialiser l'authentification
   useEffect(() => {
-    let mounted = true;
     console.log('AuthProvider initialized');
+    isMounted.current = true;
 
     const initAuth = async () => {
       try {
-        setLoading(true);
+        safeSetState(setLoading, true);
+        safeSetState(setAuthError, null);
+        
         // Vérifier la session utilisateur actuelle
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) throw sessionError;
+        
         console.log('Session checked:', session?.user?.email);
 
-        if (session?.user && mounted) {
-          setUser(session.user);
+        if (session?.user && isMounted.current) {
+          safeSetState(setUser, session.user);
           const profile = await fetchUserProfile(session.user.id);
+          
           if (!profile?.is_approved) {
-            console.log('User not approved, signing out');
-            await supabase.auth.signOut();
-            setUser(null);
-            setUserProfile(null);
+            await handleUnapprovedUser();
           }
-        } else if (mounted) {
-          setUser(null);
-          setUserProfile(null);
+        } else if (isMounted.current) {
+          resetAuthState();
         }
       } catch (error) {
         console.error('Error in initAuth:', error);
-        if (mounted) {
-          setUser(null);
-          setUserProfile(null);
+        if (isMounted.current) {
+          resetAuthState();
+          safeSetState(setAuthError, 'Erreur d\'initialisation de l\'authentification');
         }
       } finally {
-        if (mounted) {
-          setLoading(false);
+        if (isMounted.current) {
+          safeSetState(setLoading, false);
         }
       }
     };
@@ -75,36 +113,47 @@ export function AuthProvider({ children }) {
     initAuth();
 
     // Écouter les changements d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log('Auth state changed:', session?.user?.email);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      
+      try {
+        safeSetState(setLoading, true);
+        safeSetState(setAuthError, null);
 
-      if (session?.user && mounted) {
-        setUser(session.user);
-        const profile = await fetchUserProfile(session.user.id);
-        if (!profile?.is_approved) {
-          console.log('User not approved, signing out');
-          await supabase.auth.signOut();
-          setUser(null);
-          setUserProfile(null);
+        if (session?.user && isMounted.current) {
+          safeSetState(setUser, session.user);
+          const profile = await fetchUserProfile(session.user.id);
+          
+          if (!profile?.is_approved) {
+            await handleUnapprovedUser();
+          }
+        } else if (isMounted.current) {
+          resetAuthState();
         }
-      } else if (mounted) {
-        setUser(null);
-        setUserProfile(null);
-      }
-      if (mounted) {
-        setLoading(false);
+      } catch (error) {
+        console.error('Error in auth state change handler:', error);
+        if (isMounted.current) {
+          resetAuthState();
+          safeSetState(setAuthError, 'Erreur lors du changement d\'état d\'authentification');
+        }
+      } finally {
+        if (isMounted.current) {
+          safeSetState(setLoading, false);
+        }
       }
     });
 
     return () => {
-      mounted = false;
+      isMounted.current = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchUserProfile, handleUnapprovedUser, resetAuthState, safeSetState]);
 
   const signUp = async ({ email, password, fullName, phone }) => {
     try {
-      setLoading(true);
+      safeSetState(setLoading, true);
+      safeSetState(setAuthError, null);
+      
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -128,17 +177,21 @@ export function AuthProvider({ children }) {
 
       if (profileError) throw profileError;
 
-      return { error: null };
+      return { error: null, message: 'Inscription réussie. Votre compte est en attente d\'approbation.' };
     } catch (error) {
+      console.error('Error in signUp:', error);
+      safeSetState(setAuthError, error.message || 'Erreur lors de l\'inscription');
       return { error };
     } finally {
-      setLoading(false);
+      safeSetState(setLoading, false);
     }
   };
 
   const signIn = async (email, password) => {
     try {
-      setLoading(true);
+      safeSetState(setLoading, true);
+      safeSetState(setAuthError, null);
+      
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -157,35 +210,43 @@ export function AuthProvider({ children }) {
 
       if (!profile.is_approved) {
         await supabase.auth.signOut();
-        throw new Error('Votre compte est en attente d\'approbation par un administrateur.');
+        resetAuthState();
+        const approvalError = new Error('Votre compte est en attente d\'approbation par un administrateur.');
+        safeSetState(setAuthError, approvalError.message);
+        throw approvalError;
       }
 
       return { error: null };
     } catch (error) {
+      console.error('Error in signIn:', error);
+      safeSetState(setAuthError, error.message || 'Échec de la connexion. Vérifiez vos identifiants.');
       return { error };
     } finally {
-      setLoading(false);
+      safeSetState(setLoading, false);
     }
   };
 
   const signOut = async () => {
     try {
-      setLoading(true);
+      safeSetState(setLoading, true);
+      safeSetState(setAuthError, null);
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      setUser(null);
-      setUserProfile(null);
+      resetAuthState();
       
-      // Rediriger vers la page d'accueil
+      // Rediriger vers la page d'accueil sans forcer un rafraîchissement complet
+      // ce qui peut causer des problèmes d'état
       await router.push('/');
       
-      // Forcer un rafraîchissement de la page
-      window.location.reload();
+      // Nous évitons window.location.reload() car cela peut interrompre
+      // d'autres opérations en cours et causer des problèmes d'état
     } catch (error) {
       console.error('Error signing out:', error.message);
+      safeSetState(setAuthError, 'Erreur lors de la déconnexion');
     } finally {
-      setLoading(false);
+      safeSetState(setLoading, false);
     }
   };
 
@@ -202,11 +263,13 @@ export function AuthProvider({ children }) {
       user,
       userProfile,
       loading,
+      authError,
       signUp,
       signIn,
       signOut,
       isAdmin,
       isApproved,
+      fetchUserProfile, // Exposer cette fonction peut être utile pour rafraîchir le profil
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,5 @@
 import Seo from '../components/Seo';
 import Link from 'next/link';
-import Image from 'next/image';
 import { FaGraduationCap, FaUserTie, FaClock } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import GoogleReviews from '../components/GoogleReviews';
@@ -23,13 +22,13 @@ export default function Home() {
       <main className="min-h-screen flex flex-col items-center justify-center px-4 pt-20 md:pt-16">
         <div className="text-center">
           <div className="mb-6 md:mb-8 w-[280px] md:w-[400px] relative mx-auto">
-            <Image
+            <img
               src="/images/logo.png"
               alt="Qué Rico Mambo Salsa"
-              width={400}
-              height={200}
+              width="400"
+              height="200"
               className="w-full h-auto"
-              priority
+              loading="eager"
             />
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 md:mb-6 text-[#f6bc7c] leading-tight">

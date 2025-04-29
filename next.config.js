@@ -12,6 +12,7 @@ const nextConfig = {
   swcMinify: true,
   images: {
     domains: ['maps.googleapis.com'],
+    unoptimized: true, // Désactiver l'optimisation d'images pour résoudre le problème fetchPriority
   },
 }
 

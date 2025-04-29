@@ -1,23 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Seo from '../components/Seo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../contexts/AuthContext';
+import { FaSpinner } from 'react-icons/fa';
 
 export default function Login() {
   const router = useRouter();
-  const { signIn, user } = useAuth();
+  const { signIn, user, loading: authLoading, authError } = useAuth();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
 
+  // Synchroniser les erreurs d'authentification avec l'état local
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // Réinitialiser l'erreur lorsque l'utilisateur commence à taper
+    if (error) setError('');
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -30,22 +42,44 @@ export default function Login() {
       setError('');
       setLoading(true);
       const { error } = await signIn(formData.email, formData.password);
-      if (error) throw error;
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Indiquer que la redirection est en cours
+      setRedirecting(true);
       
       // Rediriger vers la page demandée ou la page d'accueil
       const redirectTo = router.query.redirect || '/';
-      router.push(redirectTo);
+      await router.push(redirectTo);
     } catch (error) {
-      setError('Échec de la connexion. Vérifiez vos identifiants.');
+      console.error('Login error:', error);
+      setError(error.message || 'Échec de la connexion. Vérifiez vos identifiants.');
     } finally {
       setLoading(false);
     }
   };
 
   // Si l'utilisateur est déjà connecté, rediriger vers la page d'accueil
-  if (user) {
-    router.push('/');
-    return null;
+  useEffect(() => {
+    if (user) {
+      setRedirecting(true);
+      const redirectTo = router.query.redirect || '/';
+      router.push(redirectTo);
+    }
+  }, [user, router]);
+  
+  // Afficher un écran de chargement pendant la redirection
+  if (redirecting) {
+    return (
+      <div className="min-h-screen bg-[#2b2b2b] flex items-center justify-center">
+        <div className="text-[#f6bc7c] flex flex-col items-center">
+          <FaSpinner className="animate-spin text-4xl mb-4" />
+          <p>Redirection en cours...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -116,10 +150,11 @@ export default function Login() {
 
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || authLoading}
+                className="w-full bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                {loading ? 'Connexion...' : 'Se connecter'}
+                {(loading || authLoading) && <FaSpinner className="animate-spin mr-2" />}
+                {loading || authLoading ? 'Connexion...' : 'Se connecter'}
               </button>
 
               <div className="text-center text-sm">
