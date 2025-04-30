@@ -291,31 +291,49 @@ export function AuthProvider({ children }) {
       safeSetState(setLoading, true);
       safeSetState(setAuthError, null);
       
-      // Supprimer d'abord le stockage local pour éviter les problèmes de persistance
+      // Nettoyer complètement le stockage local
       if (typeof window !== 'undefined') {
+        // Supprimer les clés spécifiques à notre application
         window.localStorage.removeItem('salsa-rennes-auth-storage');
+        window.localStorage.removeItem('salsa-rennes-user-profile');
+        window.localStorage.removeItem('salsa-rennes-profile-timestamp');
+        
+        // Supprimer toutes les clés liées à Supabase
+        Object.keys(window.localStorage)
+          .filter(key => key.includes('supabase') || key.includes('sb-'))
+          .forEach(key => {
+            console.log(`Removing localStorage key: ${key}`);
+            window.localStorage.removeItem(key);
+          });
       }
       
+      // Déconnexion de Supabase
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
       resetAuthState();
       
-      // En production, forcer un rafraîchissement complet pour éviter les problèmes de cache
-      if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+      // Toujours forcer un rafraîchissement complet pour éviter les problèmes de cache
+      if (typeof window !== 'undefined') {
+        console.log('Forcing page refresh after signout');
         window.location.href = '/';
         return; // Ne pas continuer l'exécution après la redirection
       }
       
-      // En développement, utiliser le routeur Next.js
+      // Fallback au routeur Next.js (ne devrait jamais être atteint)
       await router.push('/');
     } catch (error) {
       console.error('Error signing out:', error.message);
       safeSetState(setAuthError, 'Erreur lors de la déconnexion');
       
-      // Même en cas d'erreur, essayer de nettoyer le stockage local
+      // Même en cas d'erreur, essayer de nettoyer le stockage local et forcer un rafraîchissement
       if (typeof window !== 'undefined') {
-        window.localStorage.removeItem('salsa-rennes-auth-storage');
+        // Nettoyer le stockage et forcer un rafraîchissement
+        Object.keys(window.localStorage)
+          .filter(key => key.includes('supabase') || key.includes('sb-') || key.includes('salsa-rennes'))
+          .forEach(key => window.localStorage.removeItem(key));
+          
+        window.location.href = '/';
       }
     } finally {
       safeSetState(setLoading, false);
