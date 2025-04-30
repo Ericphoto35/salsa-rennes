@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { supabase } from '../lib/supabase';
+import { supabase, checkSession } from '../lib/supabase';
 
 const AuthContext = createContext({});
 
@@ -94,8 +94,8 @@ export function AuthProvider({ children }) {
         safeSetState(setLoading, true);
         safeSetState(setAuthError, null);
         
-        // Vérifier la session utilisateur actuelle
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        // Vérifier la session utilisateur avec la fonction utilitaire améliorée
+        const { session, error: sessionError } = await checkSession();
         
         if (sessionError) throw sessionError;
         
@@ -104,12 +104,20 @@ export function AuthProvider({ children }) {
         if (session?.user && isMounted.current) {
           safeSetState(setUser, session.user);
           try {
+            // Ajouter un délai court pour s'assurer que la session est bien établie
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
             const profile = await fetchUserProfile(session.user.id);
             
             if (!profile) {
               console.warn('No profile found for user, forcing sign out');
               await supabase.auth.signOut();
               resetAuthState();
+              // Forcer une actualisation complète en production pour éviter les problèmes de cache
+              if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+                window.localStorage.removeItem('salsa-rennes-auth-storage');
+                window.location.href = '/';
+              }
             } else if (!profile.is_approved) {
               await handleUnapprovedUser();
             }
@@ -118,6 +126,11 @@ export function AuthProvider({ children }) {
             // En cas d'erreur de profil, on force une déconnexion pour éviter l'état bloqué
             await supabase.auth.signOut();
             resetAuthState();
+            // Forcer une actualisation complète en production
+            if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+              window.localStorage.removeItem('salsa-rennes-auth-storage');
+              window.location.href = '/';
+            }
           }
         } else if (isMounted.current) {
           resetAuthState();
@@ -127,6 +140,10 @@ export function AuthProvider({ children }) {
         if (isMounted.current) {
           resetAuthState();
           safeSetState(setAuthError, 'Erreur d\'initialisation de l\'authentification');
+          // Forcer une actualisation complète en cas d'erreur en production
+          if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+            window.localStorage.removeItem('salsa-rennes-auth-storage');
+          }
         }
       } finally {
         if (isMounted.current) {
@@ -145,15 +162,32 @@ export function AuthProvider({ children }) {
         safeSetState(setLoading, true);
         safeSetState(setAuthError, null);
 
-        if (session?.user && isMounted.current) {
+        if (event === 'SIGNED_OUT') {
+          console.log('User signed out, cleaning up state');
+          resetAuthState();
+          
+          // En production, s'assurer que le stockage local est nettoyé
+          if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+            window.localStorage.removeItem('salsa-rennes-auth-storage');
+          }
+        } else if (session?.user && isMounted.current) {
           safeSetState(setUser, session.user);
           try {
+            // Ajouter un délai court pour s'assurer que la session est bien établie
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
             const profile = await fetchUserProfile(session.user.id);
             
             if (!profile) {
               console.warn('No profile found for user in state change, forcing sign out');
               await supabase.auth.signOut();
               resetAuthState();
+              
+              // Forcer une actualisation complète en production
+              if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+                window.localStorage.removeItem('salsa-rennes-auth-storage');
+                window.location.href = '/';
+              }
             } else if (!profile.is_approved) {
               await handleUnapprovedUser();
             }
@@ -162,6 +196,12 @@ export function AuthProvider({ children }) {
             // En cas d'erreur de profil, on force une déconnexion pour éviter l'état bloqué
             await supabase.auth.signOut();
             resetAuthState();
+            
+            // Forcer une actualisation complète en production
+            if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+              window.localStorage.removeItem('salsa-rennes-auth-storage');
+              window.location.href = '/';
+            }
           }
         } else if (isMounted.current) {
           resetAuthState();
@@ -171,6 +211,11 @@ export function AuthProvider({ children }) {
         if (isMounted.current) {
           resetAuthState();
           safeSetState(setAuthError, 'Erreur lors du changement d\'état d\'authentification');
+          
+          // Nettoyer le stockage local en cas d'erreur
+          if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+            window.localStorage.removeItem('salsa-rennes-auth-storage');
+          }
         }
       } finally {
         if (isMounted.current) {
@@ -267,20 +312,32 @@ export function AuthProvider({ children }) {
       safeSetState(setLoading, true);
       safeSetState(setAuthError, null);
       
+      // Supprimer d'abord le stockage local pour éviter les problèmes de persistance
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('salsa-rennes-auth-storage');
+      }
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
       resetAuthState();
       
-      // Rediriger vers la page d'accueil sans forcer un rafraîchissement complet
-      // ce qui peut causer des problèmes d'état
-      await router.push('/');
+      // En production, forcer un rafraîchissement complet pour éviter les problèmes de cache
+      if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+        window.location.href = '/';
+        return; // Ne pas continuer l'exécution après la redirection
+      }
       
-      // Nous évitons window.location.reload() car cela peut interrompre
-      // d'autres opérations en cours et causer des problèmes d'état
+      // En développement, utiliser le routeur Next.js
+      await router.push('/');
     } catch (error) {
       console.error('Error signing out:', error.message);
       safeSetState(setAuthError, 'Erreur lors de la déconnexion');
+      
+      // Même en cas d'erreur, essayer de nettoyer le stockage local
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('salsa-rennes-auth-storage');
+      }
     } finally {
       safeSetState(setLoading, false);
     }

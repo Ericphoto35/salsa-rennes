@@ -142,6 +142,12 @@ export default function Navbar() {
                       {isRefreshing && <FaSpinner className="animate-spin mr-2" />}
                       {isRefreshing ? 'Rafraîchissement...' : 'Rafraîchir'}
                     </button>
+                    <Link
+                      href="/session-recovery"
+                      className="text-yellow-500 hover:text-yellow-400 mx-2"
+                    >
+                      Réparer la session
+                    </Link>
                     <button
                       onClick={handleSignOut}
                       disabled={isLoggingOut}

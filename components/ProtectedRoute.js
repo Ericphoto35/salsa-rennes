@@ -64,21 +64,33 @@ export default function ProtectedRoute({ children }) {
             <h2 className="text-xl font-bold">Problème de chargement</h2>
           </div>
           <p className="text-white mb-4">
-            {refreshError || "Impossible de charger votre profil. Veuillez vous reconnecter."}
+            {refreshError || "Impossible de charger votre profil. Veuillez vous reconnecter ou réparer votre session."}
           </p>
-          <div className="flex justify-between">
+          <div className="flex flex-col space-y-3">
+            <div className="flex justify-between">
+              <button
+                onClick={() => router.push('/')}
+                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              >
+                Retour à l'accueil
+              </button>
+              <button
+                onClick={() => router.push('/login?refresh=true')}
+                className="bg-[#f6bc7c] text-[#2b2b2b] px-4 py-2 rounded hover:bg-[#f6bc7c]/80"
+              >
+                Se reconnecter
+              </button>
+            </div>
             <button
-              onClick={() => router.push('/')}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              onClick={() => router.push('/session-recovery')}
+              className="w-full bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 flex items-center justify-center"
             >
-              Retour à l'accueil
+              <FaExclamationTriangle className="mr-2" />
+              Réparer ma session
             </button>
-            <button
-              onClick={() => router.push('/login?refresh=true')}
-              className="bg-[#f6bc7c] text-[#2b2b2b] px-4 py-2 rounded hover:bg-[#f6bc7c]/80"
-            >
-              Se reconnecter
-            </button>
+            <p className="text-gray-400 text-sm text-center mt-2">
+              Utilisez cette option si vous rencontrez des problèmes persistants de connexion
+            </p>
           </div>
         </div>
       </div>
