@@ -291,20 +291,28 @@ export function AuthProvider({ children }) {
       safeSetState(setLoading, true);
       safeSetState(setAuthError, null);
       
-      // Nettoyer complètement le stockage local
-      if (typeof window !== 'undefined') {
-        // Supprimer les clés spécifiques à notre application
-        window.localStorage.removeItem('salsa-rennes-auth-storage');
+      // Nettoyer le stockage local et les cookies
+      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+        console.log('Cleaning up storage and cookies...');
+        
+        // Nettoyer le localStorage (pour le cache de profil et autres données)
         window.localStorage.removeItem('salsa-rennes-user-profile');
         window.localStorage.removeItem('salsa-rennes-profile-timestamp');
         
-        // Supprimer toutes les clés liées à Supabase
+        // Supprimer les clés liées à Supabase dans localStorage (au cas où)
         Object.keys(window.localStorage)
           .filter(key => key.includes('supabase') || key.includes('sb-'))
           .forEach(key => {
             console.log(`Removing localStorage key: ${key}`);
             window.localStorage.removeItem(key);
           });
+        
+        // Supprimer les cookies d'authentification
+        const cookiesToDelete = ['sb-auth-token', 'sb-refresh-token', 'sb-access-token'];
+        cookiesToDelete.forEach(cookieName => {
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+          console.log(`Removed cookie: ${cookieName}`);
+        });
       }
       
       // Déconnexion de Supabase
@@ -313,7 +321,7 @@ export function AuthProvider({ children }) {
       
       resetAuthState();
       
-      // Toujours forcer un rafraîchissement complet pour éviter les problèmes de cache
+      // Forcer un rafraîchissement complet pour éviter les problèmes de cache
       if (typeof window !== 'undefined') {
         console.log('Forcing page refresh after signout');
         window.location.href = '/';
@@ -326,13 +334,14 @@ export function AuthProvider({ children }) {
       console.error('Error signing out:', error.message);
       safeSetState(setAuthError, 'Erreur lors de la déconnexion');
       
-      // Même en cas d'erreur, essayer de nettoyer le stockage local et forcer un rafraîchissement
-      if (typeof window !== 'undefined') {
-        // Nettoyer le stockage et forcer un rafraîchissement
-        Object.keys(window.localStorage)
-          .filter(key => key.includes('supabase') || key.includes('sb-') || key.includes('salsa-rennes'))
-          .forEach(key => window.localStorage.removeItem(key));
-          
+      // Même en cas d'erreur, essayer de nettoyer les cookies et forcer un rafraîchissement
+      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+        // Supprimer les cookies d'authentification
+        const cookiesToDelete = ['sb-auth-token', 'sb-refresh-token', 'sb-access-token'];
+        cookiesToDelete.forEach(cookieName => {
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+        });
+        
         window.location.href = '/';
       }
     } finally {
