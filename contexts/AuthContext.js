@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { supabase, checkSession } from '../lib/supabase';
+import { supabase, checkSession, fetchUserProfileWithRetry } from '../lib/supabase';
 
 const AuthContext = createContext({});
 
@@ -17,31 +17,10 @@ export function AuthProvider({ children }) {
     
     try {
       console.log('Fetching user profile for:', userId);
-      // Ajout d'un timeout pour éviter les problèmes de réseau infinis
-      const fetchPromise = supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
       
-      // Créer un timeout de 10 secondes
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout fetching user profile')), 10000);
-      });
+      // Utiliser la nouvelle fonction avec réessais automatiques
+      const data = await fetchUserProfileWithRetry(userId, 3);
       
-      // Race entre la requête et le timeout
-      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
-
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        throw error;
-      }
-
-      if (!data) {
-        console.error('No profile data returned for user:', userId);
-        throw new Error('No profile data found');
-      }
-
       console.log('User profile fetched:', data);
       if (isMounted.current) {
         setUserProfile(data);
