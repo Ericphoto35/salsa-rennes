@@ -17,15 +17,29 @@ export function AuthProvider({ children }) {
     
     try {
       console.log('Fetching user profile for:', userId);
-      const { data, error } = await supabase
+      // Ajout d'un timeout pour éviter les problèmes de réseau infinis
+      const fetchPromise = supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single();
+      
+      // Créer un timeout de 10 secondes
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout fetching user profile')), 10000);
+      });
+      
+      // Race entre la requête et le timeout
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
 
       if (error) {
         console.error('Error fetching user profile:', error);
         throw error;
+      }
+
+      if (!data) {
+        console.error('No profile data returned for user:', userId);
+        throw new Error('No profile data found');
       }
 
       console.log('User profile fetched:', data);
@@ -89,10 +103,21 @@ export function AuthProvider({ children }) {
 
         if (session?.user && isMounted.current) {
           safeSetState(setUser, session.user);
-          const profile = await fetchUserProfile(session.user.id);
-          
-          if (!profile?.is_approved) {
-            await handleUnapprovedUser();
+          try {
+            const profile = await fetchUserProfile(session.user.id);
+            
+            if (!profile) {
+              console.warn('No profile found for user, forcing sign out');
+              await supabase.auth.signOut();
+              resetAuthState();
+            } else if (!profile.is_approved) {
+              await handleUnapprovedUser();
+            }
+          } catch (profileError) {
+            console.error('Error fetching profile during init:', profileError);
+            // En cas d'erreur de profil, on force une déconnexion pour éviter l'état bloqué
+            await supabase.auth.signOut();
+            resetAuthState();
           }
         } else if (isMounted.current) {
           resetAuthState();
@@ -122,10 +147,21 @@ export function AuthProvider({ children }) {
 
         if (session?.user && isMounted.current) {
           safeSetState(setUser, session.user);
-          const profile = await fetchUserProfile(session.user.id);
-          
-          if (!profile?.is_approved) {
-            await handleUnapprovedUser();
+          try {
+            const profile = await fetchUserProfile(session.user.id);
+            
+            if (!profile) {
+              console.warn('No profile found for user in state change, forcing sign out');
+              await supabase.auth.signOut();
+              resetAuthState();
+            } else if (!profile.is_approved) {
+              await handleUnapprovedUser();
+            }
+          } catch (profileError) {
+            console.error('Error fetching profile during state change:', profileError);
+            // En cas d'erreur de profil, on force une déconnexion pour éviter l'état bloqué
+            await supabase.auth.signOut();
+            resetAuthState();
           }
         } else if (isMounted.current) {
           resetAuthState();

@@ -1,14 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../contexts/AuthContext';
-import { FaBars, FaTimes, FaSpinner } from 'react-icons/fa';
+import { FaBars, FaTimes, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
 
 export default function Navbar() {
-  const { user, userProfile, loading, authError, signOut } = useAuth();
+  const { user, userProfile, loading, authError, signOut, fetchUserProfile } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [navError, setNavError] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fonction pour rafraîchir le profil utilisateur en cas de problème
+  const refreshUserProfile = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      setIsRefreshing(true);
+      setNavError('');
+      await fetchUserProfile(user.id);
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
+      setNavError('Erreur lors du rafraîchissement du profil');
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [user, fetchUserProfile]);
 
   useEffect(() => {
     setMounted(true);
@@ -19,7 +36,12 @@ export default function Navbar() {
     } else {
       setNavError('');
     }
-  }, [authError]);
+
+    // Si l'utilisateur est connecté mais qu'il n'y a pas de profil, essayer de rafraîchir
+    if (mounted && user && !userProfile && !loading) {
+      refreshUserProfile();
+    }
+  }, [authError, user, userProfile, loading, mounted, refreshUserProfile]);
 
   const handleSignOut = async () => {
     try {
@@ -99,6 +121,31 @@ export default function Navbar() {
                       className={`text-[#f6bc7c] hover:text-[#f6bc7c]/80 flex items-center ${
                         isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
+                    >
+                      {isLoggingOut && <FaSpinner className="animate-spin mr-2" />}
+                      {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
+                    </button>
+                  </>
+                ) : user && !userProfile ? (
+                  <>
+                    <div className="text-white text-sm flex items-center">
+                      <FaExclamationTriangle className="text-yellow-500 mr-2" />
+                      Problème de chargement du profil
+                    </div>
+                    <button
+                      onClick={refreshUserProfile}
+                      disabled={isRefreshing}
+                      className={`bg-[#f6bc7c] text-[#2b2b2b] px-4 py-2 rounded-md hover:bg-[#f6bc7c]/80 flex items-center ${
+                        isRefreshing ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      {isRefreshing && <FaSpinner className="animate-spin mr-2" />}
+                      {isRefreshing ? 'Rafraîchissement...' : 'Rafraîchir'}
+                    </button>
+                    <button
+                      onClick={handleSignOut}
+                      disabled={isLoggingOut}
+                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 flex items-center"
                     >
                       {isLoggingOut && <FaSpinner className="animate-spin mr-2" />}
                       {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
