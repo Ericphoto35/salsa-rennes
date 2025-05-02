@@ -1,18 +1,17 @@
 import Seo from '../components/Seo';
 import Link from 'next/link';
-import { FaGraduationCap, FaUserTie, FaClock } from 'react-icons/fa';
+import { FaGraduationCap, FaUserTie, FaClock, FaMapMarkerAlt, FaCalendarAlt, FaUsers } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import GoogleReviews from '../components/GoogleReviews';
 
 export default function Home() {
   // TODO: Implement actual authentication logic
   const isLoggedIn = false;
-
   return (
     <div className="min-h-screen bg-[#2b2b2b]">
       <Seo
-        title="Salsa Rennes - École de danse"
-        description="Apprenez la salsa à Rennes avec nos cours en ligne et en présentiel. Cours, événements, stages et soirées pour tous niveaux à Rennes."
+        title="Salsa Rennes - École de danse cubaine et portoricaine à Rennes"
+        description="Apprenez la salsa à Rennes avec nos cours en ligne et en présentiel. École de danse cubaine et portoricaine proposant cours, événements, stages et soirées pour tous niveaux à Rennes. Rejoignez la communauté salsa de Rennes."
         url="https://www.salsarennes.fr"
         image="/images/logo.png"
       />
@@ -35,7 +34,7 @@ export default function Home() {
             Apprenez la Salsa à Rennes
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto text-white/90 px-2">
-            Découvrez notre méthode unique d'apprentissage, du niveau débutant à avancé
+            Découvrez notre méthode unique d'apprentissage de la salsa à Rennes, du niveau débutant à avancé, avec des cours adaptés à tous les profils et tous les âges
           </p>
           
           <div className="space-y-4">
@@ -96,21 +95,70 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-12 md:mt-16 mb-12 md:mb-16 w-full">
-          <GoogleReviews />
-        </div>
+        {/* Le composant GoogleReviews a été déplacé dans la section témoignages */}
 
-        <div className="mt-12 md:mt-16 mb-12 md:mb-16 w-full text-center">
-          <h2 className="text-2xl font-semibold mb-6 text-[#f6bc7c]">Notre Association à Rennes</h2>
-          <p className="text-white/90 mb-6">Découvrez notre association de salsa et venez nous rencontrer dans nos différentes salles.</p>
+        <div className="mt-12 md:mt-16 w-full text-center">
+          <h2 className="text-2xl font-semibold mb-6 text-[#f6bc7c]">Notre École de Salsa à Rennes</h2>
+          <p className="text-white/90 mb-6 max-w-3xl mx-auto px-4">Depuis plus de 10 ans, notre école de danse Qué Rico Mambo est devenue une référence pour apprendre la salsa à Rennes. Située en plein cœur de la ville, nous proposons des cours de salsa cubaine et portoricaine pour tous les niveaux, des débutants aux danseurs confirmés.</p>
+          <p className="text-white/90 mb-6 max-w-3xl mx-auto px-4">Notre équipe de professeurs passionnés vous accompagne dans votre apprentissage de la salsa à Rennes, avec une pédagogie adaptée et une ambiance conviviale qui fait notre réputation.</p>
           <a 
             href="https://www.quericomambo.fr" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-block bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            className="inline-block bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 mb-12"
           >
             Qué Rico Mambo
           </a>
+        </div>
+        
+        <div className="w-full bg-[#222] py-10 px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-8 text-[#f6bc7c] text-center">La Salsa à Rennes : Une Communauté Dynamique</h2>
+            
+            <div className="grid md:grid-cols-2 gap-8 mb-10">
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <FaMapMarkerAlt className="text-[#f6bc7c] text-2xl flex-shrink-0" />
+                  <h3 className="text-xl font-semibold text-[#f6bc7c]">Cours de Salsa à Rennes</h3>
+                </div>
+                <p className="text-white/90">Nos cours de salsa à Rennes se déroulent dans plusieurs salles à travers la ville, notamment dans le centre-ville et le quartier Villejean. Accessibles en transport en commun, nos salles sont équipées pour vous offrir une expérience d'apprentissage optimale.</p>
+              </div>
+              
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <FaCalendarAlt className="text-[#f6bc7c] text-2xl flex-shrink-0" />
+                  <h3 className="text-xl font-semibold text-[#f6bc7c]">Événements Salsa à Rennes</h3>
+                </div>
+                <p className="text-white/90">Tout au long de l'année, nous organisons des soirées salsa à Rennes, des stages avec des danseurs internationaux et des événements festifs. Rejoignez la communauté salsa rennaise et partagez votre passion pour la danse latine.</p>
+              </div>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <FaUsers className="text-[#f6bc7c] text-2xl flex-shrink-0" />
+                  <h3 className="text-xl font-semibold text-[#f6bc7c]">La Communauté Salsa de Rennes</h3>
+                </div>
+                <p className="text-white/90">Rennes est reconnue pour sa scène salsa dynamique et accueillante. Nos élèves viennent de tous horizons : étudiants, professionnels, retraités... tous unis par la passion de la salsa. Intégrez facilement notre communauté et développez votre réseau social à Rennes.</p>
+              </div>
+              
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <FaGraduationCap className="text-[#f6bc7c] text-2xl flex-shrink-0" />
+                  <h3 className="text-xl font-semibold text-[#f6bc7c]">Apprendre la Salsa à Rennes</h3>
+                </div>
+                <p className="text-white/90">Notre méthode d'enseignement de la salsa à Rennes est reconnue pour son efficacité. Nous proposons des cours structurés, progressifs et adaptés à chaque niveau. Que vous soyez débutant complet ou danseur expérimenté, vous trouverez chez nous le cours qui vous correspond à Rennes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-12 md:mt-16 mb-12 md:mb-16 w-full text-center">
+          <h2 className="text-2xl font-semibold mb-6 text-[#f6bc7c]">Témoignages de nos élèves de Salsa à Rennes</h2>
+          <p className="text-white/90 mb-6 max-w-3xl mx-auto px-4">Découvrez ce que nos élèves pensent de nos cours de salsa à Rennes et pourquoi ils nous recommandent.</p>
+          <div className="mt-6 md:mt-8 w-full">
+            <GoogleReviews />
+          </div>
         </div>
       </main>
     </div>

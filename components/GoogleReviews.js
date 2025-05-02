@@ -38,7 +38,7 @@ export default function GoogleReviews() {
     <div className="w-full max-w-6xl mx-auto px-4 py-8 md:py-12">
       <div className="flex items-center justify-center gap-2 mb-6 md:mb-8">
         <FaGoogle className="text-[#f6bc7c] text-2xl md:text-3xl" />
-        <h2 className="text-xl md:text-2xl font-semibold text-[#f6bc7c]">Avis de nos clients</h2>
+        <h2 className="text-xl md:text-2xl font-semibold text-[#f6bc7c]">Avis Google</h2>
       </div>
       
       <Swiper
