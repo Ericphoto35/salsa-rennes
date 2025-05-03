@@ -100,6 +100,24 @@ export default function Home() {
         <div className="mt-12 md:mt-16 w-full text-center">
           <h2 className="text-2xl font-semibold mb-6 text-[#f6bc7c]">Notre École de Salsa à Rennes</h2>
           <p className="text-white/90 mb-6 max-w-3xl mx-auto px-4">Depuis plus de 10 ans, notre école de danse Qué Rico Mambo est devenue une référence pour apprendre la salsa à Rennes. Située en plein cœur de la ville, nous proposons des cours de salsa cubaine et portoricaine pour tous les niveaux, des débutants aux danseurs confirmés.</p>
+          
+          <div className="mb-8 max-w-3xl mx-auto px-4">
+            <h3 className="text-xl font-semibold mb-4 text-[#f6bc7c]">Nos Professeurs</h3>
+            <div className="relative w-full max-w-2xl mx-auto rounded-lg overflow-hidden shadow-xl mb-6">
+              <div className="bg-[#333] aspect-[16/9] flex items-center justify-center">
+              <img
+                src="/images/clem eric.webp"
+                alt="Professeurs de salsa à Rennes"
+                className="w-full h-auto"
+                loading="lazy"
+              />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <p className="text-white font-medium text-center">L'équipe de professeurs de Salsa Rennes</p>
+              </div>
+            </div>
+          </div>
+          
           <p className="text-white/90 mb-6 max-w-3xl mx-auto px-4">Notre équipe de professeurs passionnés vous accompagne dans votre apprentissage de la salsa à Rennes, avec une pédagogie adaptée et une ambiance conviviale qui fait notre réputation.</p>
           <a 
             href="https://www.quericomambo.fr" 
