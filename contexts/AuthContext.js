@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { supabase, checkSession, fetchUserProfileWithRetry } from '../lib/supabase';
+import { cleanAuthStorage, validateAndCleanSession } from '../lib/authUtils';
 
 const AuthContext = createContext({});
 
@@ -62,6 +63,45 @@ export function AuthProvider({ children }) {
       resetAuthState();
     }
   }, [resetAuthState, safeSetState]);
+
+  // Vérification périodique de la validité de la session
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Vérifier la validité de la session toutes les 30 minutes
+    const sessionCheckInterval = 30 * 60 * 1000; // 30 minutes
+    
+    const checkSessionValidity = async () => {
+      if (!user) return; // Ne pas vérifier si l'utilisateur n'est pas connecté
+      
+      console.log('Vérification périodique de la validité de la session...');
+      const isValid = await validateAndCleanSession(supabase);
+      
+      if (!isValid && isMounted.current) {
+        console.log('Session invalide détectée lors de la vérification périodique, déconnexion...');
+        // La session n'est plus valide, déconnecter l'utilisateur
+        resetAuthState();
+        safeSetState(setAuthError, 'Votre session a expiré. Veuillez vous reconnecter.');
+        
+        // Forcer un rafraîchissement de la page
+        if (typeof window !== 'undefined') {
+          window.location.replace('/');
+        }
+      }
+    };
+    
+    // Vérifier immédiatement au démarrage
+    if (user) {
+      checkSessionValidity();
+    }
+    
+    // Configurer la vérification périodique
+    const intervalId = setInterval(checkSessionValidity, sessionCheckInterval);
+    
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [user, resetAuthState, safeSetState]);
 
   // Initialiser l'authentification
   useEffect(() => {
@@ -291,40 +331,23 @@ export function AuthProvider({ children }) {
       safeSetState(setLoading, true);
       safeSetState(setAuthError, null);
       
-      // Nettoyer le stockage local et les cookies
-      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-        console.log('Cleaning up storage and cookies...');
-        
-        // Nettoyer le localStorage (pour le cache de profil et autres données)
-        window.localStorage.removeItem('salsa-rennes-user-profile');
-        window.localStorage.removeItem('salsa-rennes-profile-timestamp');
-        
-        // Supprimer les clés liées à Supabase dans localStorage (au cas où)
-        Object.keys(window.localStorage)
-          .filter(key => key.includes('supabase') || key.includes('sb-'))
-          .forEach(key => {
-            console.log(`Removing localStorage key: ${key}`);
-            window.localStorage.removeItem(key);
-          });
-        
-        // Supprimer les cookies d'authentification
-        const cookiesToDelete = ['sb-auth-token', 'sb-refresh-token', 'sb-access-token'];
-        cookiesToDelete.forEach(cookieName => {
-          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
-          console.log(`Removed cookie: ${cookieName}`);
-        });
-      }
+      // Utiliser la fonction utilitaire pour nettoyer tous les cookies et le stockage
+      cleanAuthStorage();
       
-      // Déconnexion de Supabase
-      const { error } = await supabase.auth.signOut();
+      // Déconnexion de Supabase avec options de nettoyage complètes
+      const { error } = await supabase.auth.signOut({ scope: 'global' });
       if (error) throw error;
       
       resetAuthState();
       
+      // Attendre un court instant pour s'assurer que toutes les opérations de nettoyage sont terminées
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Forcer un rafraîchissement complet pour éviter les problèmes de cache
       if (typeof window !== 'undefined') {
         console.log('Forcing page refresh after signout');
-        window.location.href = '/';
+        // Utiliser location.replace au lieu de location.href pour éviter l'historique
+        window.location.replace('/');
         return; // Ne pas continuer l'exécution après la redirection
       }
       
@@ -335,14 +358,11 @@ export function AuthProvider({ children }) {
       safeSetState(setAuthError, 'Erreur lors de la déconnexion');
       
       // Même en cas d'erreur, essayer de nettoyer les cookies et forcer un rafraîchissement
-      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-        // Supprimer les cookies d'authentification
-        const cookiesToDelete = ['sb-auth-token', 'sb-refresh-token', 'sb-access-token'];
-        cookiesToDelete.forEach(cookieName => {
-          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
-        });
-        
-        window.location.href = '/';
+      cleanAuthStorage();
+      
+      if (typeof window !== 'undefined') {
+        // Forcer un rafraîchissement complet même en cas d'erreur
+        window.location.replace('/');
       }
     } finally {
       safeSetState(setLoading, false);
