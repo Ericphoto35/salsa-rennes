@@ -126,19 +126,32 @@ export function AuthProvider({ children }) {
             // Ajouter un délai court pour s'assurer que la session est bien établie
             await new Promise(resolve => setTimeout(resolve, 100));
             
-            const profile = await fetchUserProfile(session.user.id);
-            
-            if (!profile) {
-              console.warn('No profile found for user, forcing sign out');
-              await supabase.auth.signOut();
-              resetAuthState();
-              // Forcer une actualisation complète en production pour éviter les problèmes de cache
-              if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
-                window.localStorage.removeItem('salsa-rennes-auth-storage');
-                window.location.href = '/';
+            // Essayer de récupérer le profil avec gestion d'erreur améliorée
+            try {
+              const profile = await fetchUserProfile(session.user.id);
+              
+              // Vérifier si c'est un profil d'urgence (créé en cas d'erreur réseau)
+              if (profile.emergency_profile) {
+                console.warn('Using emergency profile due to network issues');
+                safeSetState(setUserProfile, profile);
+                // Ne pas déconnecter l'utilisateur, mais planifier une nouvelle tentative
+                setTimeout(() => {
+                  if (isMounted.current) {
+                    fetchUserProfile(session.user.id).catch(e => {
+                      console.log('Background profile refresh failed:', e);
+                    });
+                  }
+                }, 30000); // Réessayer dans 30 secondes
+              } else if (!profile.is_approved) {
+                await handleUnapprovedUser();
               }
-            } else if (!profile.is_approved) {
-              await handleUnapprovedUser();
+            } catch (profileError) {
+              console.error('Error fetching profile, but will continue session:', profileError);
+              // Ne pas déconnecter l'utilisateur en cas d'erreur réseau temporaire
+              // sauf si explicitement demandé par l'utilisateur
+              if (profileError.message && profileError.message.includes('not approved')) {
+                await handleUnapprovedUser();
+              }
             }
           } catch (profileError) {
             console.error('Error fetching profile during init:', profileError);
@@ -195,20 +208,32 @@ export function AuthProvider({ children }) {
             // Ajouter un délai court pour s'assurer que la session est bien établie
             await new Promise(resolve => setTimeout(resolve, 100));
             
-            const profile = await fetchUserProfile(session.user.id);
-            
-            if (!profile) {
-              console.warn('No profile found for user in state change, forcing sign out');
-              await supabase.auth.signOut();
-              resetAuthState();
+            // Essayer de récupérer le profil avec gestion d'erreur améliorée
+            try {
+              const profile = await fetchUserProfile(session.user.id);
               
-              // Forcer une actualisation complète en production
-              if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
-                window.localStorage.removeItem('salsa-rennes-auth-storage');
-                window.location.href = '/';
+              // Vérifier si c'est un profil d'urgence (créé en cas d'erreur réseau)
+              if (profile.emergency_profile) {
+                console.warn('Using emergency profile due to network issues during state change');
+                safeSetState(setUserProfile, profile);
+                // Ne pas déconnecter l'utilisateur, mais planifier une nouvelle tentative
+                setTimeout(() => {
+                  if (isMounted.current) {
+                    fetchUserProfile(session.user.id).catch(e => {
+                      console.log('Background profile refresh failed:', e);
+                    });
+                  }
+                }, 30000); // Réessayer dans 30 secondes
+              } else if (!profile.is_approved) {
+                await handleUnapprovedUser();
               }
-            } else if (!profile.is_approved) {
-              await handleUnapprovedUser();
+            } catch (profileError) {
+              console.error('Error fetching profile during state change, but will continue session:', profileError);
+              // Ne pas déconnecter l'utilisateur en cas d'erreur réseau temporaire
+              // sauf si explicitement demandé par l'utilisateur
+              if (profileError.message && profileError.message.includes('not approved')) {
+                await handleUnapprovedUser();
+              }
             }
           } catch (profileError) {
             console.error('Error fetching profile during state change:', profileError);
