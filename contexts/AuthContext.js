@@ -1,7 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { supabase, checkSession, fetchUserProfileWithRetry } from '../lib/supabase';
-import { cleanAuthStorage, validateAndCleanSession } from '../lib/authUtils';
 
 const AuthContext = createContext({});
 

@@ -1,10 +1,10 @@
 import Seo from '../components/Seo';
 import Navbar from '../components/Navbar';
 import ProtectedRoute from '../components/ProtectedRoute';
-import { useAuth } from '../contexts/AuthContext';
+import { useSession } from 'next-auth/react';
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { data: session } = useSession();
 
   return (
     <ProtectedRoute>
@@ -28,19 +28,29 @@ export default function Profile() {
             <div className="bg-[#2b2b2b] rounded-lg shadow-xl p-8 border border-[#f6bc7c]/20">
               <div className="space-y-4">
                 <div>
+                  <h2 className="text-[#f6bc7c] font-medium mb-2">Nom</h2>
+                  <p className="text-white">{session?.user?.name || 'Non spécifié'}</p>
+                </div>
+
+                <div>
                   <h2 className="text-[#f6bc7c] font-medium mb-2">Email</h2>
-                  <p className="text-white">{user?.email}</p>
+                  <p className="text-white">{session?.user?.email}</p>
                 </div>
 
                 <div>
                   <h2 className="text-[#f6bc7c] font-medium mb-2">ID Utilisateur</h2>
-                  <p className="text-white">{user?.id}</p>
+                  <p className="text-white">{session?.user?.id}</p>
                 </div>
 
                 <div>
-                  <h2 className="text-[#f6bc7c] font-medium mb-2">Dernière connexion</h2>
+                  <h2 className="text-[#f6bc7c] font-medium mb-2">Rôle</h2>
+                  <p className="text-white">{session?.user?.role === 'ADMIN' ? 'Administrateur' : session?.user?.role === 'INSTRUCTOR' ? 'Instructeur' : 'Élève'}</p>
+                </div>
+
+                <div>
+                  <h2 className="text-[#f6bc7c] font-medium mb-2">Membre depuis</h2>
                   <p className="text-white">
-                    {new Date(user?.last_sign_in_at).toLocaleString('fr-FR')}
+                    {session?.user?.createdAt ? new Date(session.user.createdAt).toLocaleString('fr-FR') : 'Information non disponible'}
                   </p>
                 </div>
               </div>

@@ -3,12 +3,13 @@ import Seo from '../components/Seo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
-import { useAuth } from '../contexts/AuthContext';
+import { signIn, useSession } from 'next-auth/react';
 import { FaSpinner } from 'react-icons/fa';
 
 export default function Login() {
   const router = useRouter();
-  const { signIn, user, loading: authLoading, authError } = useAuth();
+  const { data: session, status } = useSession();
+  const authLoading = status === 'loading';
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
@@ -18,12 +19,14 @@ export default function Login() {
     password: ''
   });
 
-  // Synchroniser les erreurs d'authentification avec l'état local
+  // Récupérer les erreurs de l'URL si présentes
   useEffect(() => {
-    if (authError) {
-      setError(authError);
+    if (router.query.error) {
+      setError(router.query.error === 'CredentialsSignin' 
+        ? 'Identifiants incorrects' 
+        : 'Erreur lors de la connexion');
     }
-  }, [authError]);
+  }, [router.query.error]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,10 +44,15 @@ export default function Login() {
     try {
       setError('');
       setLoading(true);
-      const { error } = await signIn(formData.email, formData.password);
       
-      if (error) {
-        throw error;
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
+      
+      if (result?.error) {
+        throw new Error(result.error || 'Échec de la connexion');
       }
       
       // Indiquer que la redirection est en cours
@@ -63,12 +71,12 @@ export default function Login() {
 
   // Si l'utilisateur est déjà connecté, rediriger vers la page d'accueil
   useEffect(() => {
-    if (user) {
+    if (session) {
       setRedirecting(true);
       const redirectTo = router.query.redirect || '/';
       router.push(redirectTo);
     }
-  }, [user, router]);
+  }, [session, router]);
   
   // Afficher un écran de chargement pendant la redirection
   if (redirecting) {
@@ -91,7 +99,7 @@ export default function Login() {
         noIndex={true}
       />
 
-      <Navbar isLoggedIn={!!user} />
+      <Navbar isLoggedIn={!!session} />
 
       <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12 pt-24">
         <div className="w-full max-w-md">

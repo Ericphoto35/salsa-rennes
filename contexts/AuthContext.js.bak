@@ -1,0 +1,186 @@
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { useRouter } from 'next/router';
+import { 
+  loginUser, 
+  registerUser, 
+  logoutUser, 
+  getCurrentUser, 
+  isAuthenticated 
+} from '../lib/auth';
+
+const AuthContext = createContext({});
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
+  const isMounted = useRef(true);
+  const router = useRouter();
+
+  // Gestion sécurisée des états d'authentification
+  const safeSetState = useCallback((setter, value) => {
+    if (isMounted.current) {
+      setter(value);
+    }
+  }, []);
+
+  // Réinitialiser les états d'authentification
+  const resetAuthState = useCallback(() => {
+    safeSetState(setUser, null);
+    safeSetState(setAuthError, null);
+  }, [safeSetState]);
+
+  // Initialiser l'authentification
+  useEffect(() => {
+    console.log('AuthProvider initialized');
+    isMounted.current = true;
+
+    const initAuth = async () => {
+      try {
+        safeSetState(setLoading, true);
+        safeSetState(setAuthError, null);
+        
+        if (isAuthenticated()) {
+          // Récupérer l'utilisateur actuel à partir du token stocké
+          const { user, error } = await getCurrentUser();
+          
+          if (error) {
+            throw new Error(error);
+          }
+          
+          if (user && isMounted.current) {
+            safeSetState(setUser, user);
+          } else if (isMounted.current) {
+            resetAuthState();
+          }
+        } else if (isMounted.current) {
+          resetAuthState();
+        }
+      } catch (error) {
+        console.error('Error in initAuth:', error);
+        if (isMounted.current) {
+          resetAuthState();
+          safeSetState(setAuthError, 'Erreur d\'initialisation de l\'authentification');
+          // Nettoyer le localStorage en cas d'erreur
+          logoutUser();
+        }
+      } finally {
+        if (isMounted.current) {
+          safeSetState(setLoading, false);
+        }
+      }
+    };
+
+    initAuth();
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, [resetAuthState, safeSetState]);
+
+  // Fonction de connexion
+  const login = useCallback(async (email, password) => {
+    try {
+      safeSetState(setLoading, true);
+      safeSetState(setAuthError, null);
+      
+      const { user, token, error } = await loginUser(email, password);
+      
+      if (error) {
+        throw new Error(error);
+      }
+      
+      if (user && isMounted.current) {
+        safeSetState(setUser, user);
+        return { success: true };
+      } else {
+        throw new Error('Erreur de connexion');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      if (isMounted.current) {
+        safeSetState(setAuthError, error.message || 'Erreur de connexion');
+      }
+      return { success: false, error: error.message };
+    } finally {
+      if (isMounted.current) {
+        safeSetState(setLoading, false);
+      }
+    }
+  }, [safeSetState]);
+
+  // Fonction d'inscription
+  const register = useCallback(async (name, email, password) => {
+    try {
+      safeSetState(setLoading, true);
+      safeSetState(setAuthError, null);
+      
+      const { user, token, error } = await registerUser(name, email, password);
+      
+      if (error) {
+        throw new Error(error);
+      }
+      
+      if (user && isMounted.current) {
+        safeSetState(setUser, user);
+        return { success: true };
+      } else {
+        throw new Error('Erreur d\'inscription');
+      }
+    } catch (error) {
+      console.error('Register error:', error);
+      if (isMounted.current) {
+        safeSetState(setAuthError, error.message || 'Erreur d\'inscription');
+      }
+      return { success: false, error: error.message };
+    } finally {
+      if (isMounted.current) {
+        safeSetState(setLoading, false);
+      }
+    }
+  }, [safeSetState]);
+
+  // Fonction de déconnexion
+  const logout = useCallback(async () => {
+    try {
+      safeSetState(setLoading, true);
+      
+      logoutUser();
+      resetAuthState();
+      
+      // Rediriger vers la page d'accueil après déconnexion
+      router.push('/');
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Logout error:', error);
+      return { success: false, error: error.message };
+    } finally {
+      if (isMounted.current) {
+        safeSetState(setLoading, false);
+      }
+    }
+  }, [resetAuthState, router, safeSetState]);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        authError,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+export default AuthContext;

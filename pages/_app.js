@@ -1,5 +1,5 @@
 import '../styles/globals.css'
-import { AuthProvider } from '../contexts/AuthContext'
+import SessionProvider from '../contexts/SessionProvider'
 import CookieConsentBanner from '../components/CookieConsent'
 import { useEffect, useState } from 'react'
 
@@ -13,10 +13,10 @@ function MyApp({ Component, pageProps }) {
   }, [])
 
   return (
-    <AuthProvider>
+    <SessionProvider session={pageProps.session}>
       <Component {...pageProps} />
       {showCookieBanner && <CookieConsentBanner />}
-    </AuthProvider>
+    </SessionProvider>
   )
 }
 

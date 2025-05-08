@@ -3,13 +3,14 @@ import Seo from '../components/Seo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
-import { useAuth } from '../contexts/AuthContext';
+import { useSession, signIn } from 'next-auth/react';
 
 export default function Inscription() {
   const router = useRouter();
-  const { signUp, user } = useAuth();
+  const { data: session } = useSession();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -33,21 +34,58 @@ export default function Inscription() {
       setError('Les mots de passe ne correspondent pas');
       return;
     }
+    
+    // Déjà en cours de chargement, ne pas soumettre à nouveau
+    if (loading) return;
+    
     try {
       setError('');
       setLoading(true);
-      const { error } = await signUp(formData);
-      if (error) throw error;
-      router.push('/login?message=Votre compte a été créé et est en attente d\'approbation par un administrateur');
+      setSuccess(false);
+      
+      console.log('Début de l\'inscription...');
+      
+      // Utiliser la nouvelle API route d'inscription
+      const response = await fetch('/api/register-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone
+        }),
+      });
+      
+      console.log('Réponse reçue:', response.status);
+      
+      // Traiter la réponse avec une meilleure gestion des erreurs
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Erreur d\'inscription:', response.status, errorText);
+        throw new Error(`Erreur ${response.status}: ${errorText.substring(0, 100)}...`);
+      }
+      
+      const data = await response.json();
+      console.log('Inscription réussie:', data);
+      
+      setSuccess(true);
+      // Rediriger vers la page de connexion avec un message de succès
+      router.push('/login?message=Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.');
     } catch (error) {
+      console.error('Erreur complète:', error);
       setError('Erreur lors de l\'inscription : ' + error.message);
     } finally {
+      // Assurez-vous que l'état de chargement est toujours désactivé, même en cas d'erreur
       setLoading(false);
+      console.log('Fin du processus d\'inscription, chargement désactivé');
     }
   };
 
   // Si l'utilisateur est déjà connecté, rediriger vers la page d'accueil
-  if (user) {
+  if (session) {
     router.push('/');
     return null;
   }
@@ -60,7 +98,7 @@ export default function Inscription() {
         url="https://www.salsarennes.fr/inscription"
       />
 
-      <Navbar isLoggedIn={!!user} />
+      <Navbar isLoggedIn={!!session} />
 
       <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12 pt-24">
         <div className="w-full max-w-md">

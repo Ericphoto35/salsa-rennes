@@ -1,47 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useAuth } from '../contexts/AuthContext';
-import { FaBars, FaTimes, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
+import { useSession, signOut } from 'next-auth/react';
+import { FaBars, FaTimes, FaSpinner } from 'react-icons/fa';
 
 export default function Navbar() {
-  const { user, userProfile, loading, authError, signOut, fetchUserProfile } = useAuth();
+  const { data: session, status } = useSession();
+  const loading = status === 'loading';
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [navError, setNavError] = useState('');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Fonction pour rafraîchir le profil utilisateur en cas de problème
-  const refreshUserProfile = useCallback(async () => {
-    if (!user) return;
-    
-    try {
-      setIsRefreshing(true);
-      setNavError('');
-      await fetchUserProfile(user.id);
-    } catch (error) {
-      console.error('Error refreshing profile:', error);
-      setNavError('Erreur lors du rafraîchissement du profil');
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [user, fetchUserProfile]);
 
   useEffect(() => {
     setMounted(true);
-    
-    // Réinitialiser les erreurs de navigation lorsque l'état d'authentification change
-    if (authError) {
-      setNavError(authError);
-    } else {
-      setNavError('');
-    }
-
-    // Si l'utilisateur est connecté mais qu'il n'y a pas de profil, essayer de rafraîchir
-    if (mounted && user && !userProfile && !loading) {
-      refreshUserProfile();
-    }
-  }, [authError, user, userProfile, loading, mounted, refreshUserProfile]);
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -102,12 +74,12 @@ export default function Navbar() {
               renderLoadingState()
             ) : (
               <>
-                {user && userProfile ? (
+                {session ? (
                   <>
                     <div className="text-white text-sm mr-4">
-                      {userProfile.full_name || userProfile.email}
+                      {session.user.name || session.user.email}
                     </div>
-                    {userProfile.is_admin && (
+                    {session.user.role === 'ADMIN' && (
                       <Link
                         href="/admin"
                         className="text-[#f6bc7c] hover:text-[#f6bc7c]/80"
@@ -115,43 +87,18 @@ export default function Navbar() {
                         Administration
                       </Link>
                     )}
+                    <Link
+                      href="/profile"
+                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 mr-4"
+                    >
+                      Mon Profil
+                    </Link>
                     <button
                       onClick={handleSignOut}
                       disabled={isLoggingOut}
                       className={`text-[#f6bc7c] hover:text-[#f6bc7c]/80 flex items-center ${
                         isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
-                    >
-                      {isLoggingOut && <FaSpinner className="animate-spin mr-2" />}
-                      {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
-                    </button>
-                  </>
-                ) : user && !userProfile ? (
-                  <>
-                    <div className="text-white text-sm flex items-center">
-                      <FaExclamationTriangle className="text-yellow-500 mr-2" />
-                      Problème de chargement du profil
-                    </div>
-                    <button
-                      onClick={refreshUserProfile}
-                      disabled={isRefreshing}
-                      className={`bg-[#f6bc7c] text-[#2b2b2b] px-4 py-2 rounded-md hover:bg-[#f6bc7c]/80 flex items-center ${
-                        isRefreshing ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      {isRefreshing && <FaSpinner className="animate-spin mr-2" />}
-                      {isRefreshing ? 'Rafraîchissement...' : 'Rafraîchir'}
-                    </button>
-                    <Link
-                      href="/session-recovery"
-                      className="text-yellow-500 hover:text-yellow-400 mx-2"
-                    >
-                      Réparer la session
-                    </Link>
-                    <button
-                      onClick={handleSignOut}
-                      disabled={isLoggingOut}
-                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 flex items-center"
                     >
                       {isLoggingOut && <FaSpinner className="animate-spin mr-2" />}
                       {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
