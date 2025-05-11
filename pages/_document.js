@@ -6,7 +6,9 @@ export default function Document() {
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images/logonoir.png" />
+        <link rel="apple-touch-icon" href="/images/logonoir.png" />
+        <link rel="shortcut icon" type="image/png" href="/images/logonoir.png" />
       </Head>
       <body>
         <Main />
