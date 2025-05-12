@@ -106,7 +106,7 @@ export default function Home() {
             <div className="relative w-full max-w-2xl mx-auto rounded-lg overflow-hidden shadow-xl mb-6">
               <div className="bg-[#333] aspect-[16/9] flex items-center justify-center">
               <img
-                src="/images/clem eric.webp"
+                src="/images/clem-eric.webp"
                 alt="Professeurs de salsa à Rennes"
                 className="w-full h-auto"
                 loading="lazy"
