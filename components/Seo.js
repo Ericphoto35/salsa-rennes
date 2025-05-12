@@ -4,7 +4,7 @@ export default function Seo({
   title = 'Salsa Rennes',
   description = 'Le site de référence pour la salsa à Rennes : soirées, cours, événements, et plus encore.',
   url = 'https://www.salsarennes.fr',
-  image = '/images/clem-eric.webp', // Nom de fichier corrigé sans espace
+  image = '/images/clem-eric.webp',
   imageWidth = 1200,
   imageHeight = 630,
   type = 'website',
