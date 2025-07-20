@@ -48,29 +48,35 @@ export default function Home() {
           <div className="space-y-4">
             <Link 
               href="/inscription" 
-              className="inline-block bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="inline-block bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#2b2b2b] px-10 py-4 rounded-full text-xl font-bold hover:from-[#e8a254] hover:to-[#f6bc7c] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 relative overflow-hidden group"
             >
-              Commencer maintenant
+              <span className="relative z-10 flex items-center justify-center">
+                Commencer maintenant
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+              <span className="absolute top-0 left-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
             </Link>
             
-            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 mt-6 sm:mt-8">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 mt-8 sm:mt-10">
               <Link 
                 href="/niveaux/debutant" 
-                className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 transition-colors"
+                className="text-[#f6bc7c] hover:text-white px-4 py-2 rounded-lg border border-[#f6bc7c] hover:bg-[#f6bc7c]/20 transition-all duration-300 transform hover:scale-105"
               >
-                Débutant
+                <span className="font-medium">Débutant</span>
               </Link>
               <Link 
                 href="/niveaux/intermediaire" 
-                className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 transition-colors"
+                className="text-[#f6bc7c] hover:text-white px-4 py-2 rounded-lg border border-[#f6bc7c] hover:bg-[#f6bc7c]/20 transition-all duration-300 transform hover:scale-105"
               >
-                Intermédiaire
+                <span className="font-medium">Intermédiaire</span>
               </Link>
               <Link 
                 href="/niveaux/avance" 
-                className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 transition-colors"
+                className="text-[#f6bc7c] hover:text-white px-4 py-2 rounded-lg border border-[#f6bc7c] hover:bg-[#f6bc7c]/20 transition-all duration-300 transform hover:scale-105"
               >
-                Avancé
+                <span className="font-medium">Avancé</span>
               </Link>
             </div>
           </div>
@@ -131,9 +137,10 @@ export default function Home() {
             href="https://www.quericomambo.fr" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-block bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 mb-12"
+            className="inline-block bg-[#f6bc7c] text-[#2b2b2b] px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#f6bc7c]/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 mb-12 relative overflow-hidden group"
           >
-            Qué Rico Mambo
+            <span className="relative z-10">Découvrir Qué Rico Mambo</span>
+            <span className="absolute top-0 left-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
           </a>
         </div>
         
