@@ -5,6 +5,8 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { useEffect } from 'react';
 import Head from 'next/head';
 
+// Mise à jour pour forcer un déploiement Vercel - 20 juillet 2025
+
 export default function PourquoiSalsa() {
   // Initialiser les graphiques après le chargement de la page
   useEffect(() => {
