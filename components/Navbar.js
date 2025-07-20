@@ -160,6 +160,12 @@ export default function Navbar() {
                 ) : (
                   <>
                     <Link
+                      href="/pourquoi-salsa"
+                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 font-medium"
+                    >
+                      Pourquoi la salsa ?
+                    </Link>
+                    <Link
                       href="/login"
                       className="text-[#f6bc7c] hover:text-[#f6bc7c]/80"
                     >
