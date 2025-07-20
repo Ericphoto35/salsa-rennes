@@ -69,27 +69,30 @@ export default function PourquoiSalsa() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
-        <script type="application/ld+json">
-          {{
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [{
-              "@type": "Question",
-              "name": "Pourquoi fait-on de la salsa en France ?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Les Français pratiquent la salsa pour de nombreuses raisons : les bienfaits physiques (cardio, coordination, flexibilité), les avantages sociaux (rencontres, communauté), l'immersion culturelle et le bien-être mental (réduction du stress). La popularité de la salsa en France a augmenté de 45% ces 5 dernières années."
-              }
-            }, {
-              "@type": "Question",
-              "name": "Quels sont les bienfaits de la salsa ?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "La salsa offre de nombreux bienfaits : amélioration du cardio et de la coordination, réduction du stress (90% des danseurs se sentent moins stressés après une session), développement de la confiance en soi, création de liens sociaux et immersion dans une culture riche et passionnante."
-              }
-            }]
+        <script 
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "Pourquoi fait-on de la salsa en France ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Les Français pratiquent la salsa pour de nombreuses raisons : les bienfaits physiques (cardio, coordination, flexibilité), les avantages sociaux (rencontres, communauté), l'immersion culturelle et le bien-être mental (réduction du stress). La popularité de la salsa en France a augmenté de 45% ces 5 dernières années."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Quels sont les bienfaits de la salsa ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "La salsa offre de nombreux bienfaits : amélioration du cardio et de la coordination, réduction du stress (90% des danseurs se sentent moins stressés après une session), développement de la confiance en soi, création de liens sociaux et immersion dans une culture riche et passionnante."
+                }
+              }]
+            })
           }}
-        </script>
+        ></script>
       </Head>
       
       <Seo
