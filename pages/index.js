@@ -30,10 +30,10 @@ export default function Home() {
               loading="eager"
             />
             <div className="flex justify-center mt-3 space-x-8">
-              <a href="https://www.facebook.com/quericomambo" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <a href="https://www.facebook.com/quericomambo.fr" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                 <FaFacebook className="text-[#f6bc7c] text-4xl hover:text-[#f6bc7c]/80 transition-colors" />
               </a>
-              <a href="https://www.instagram.com/quericomambo" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <a href="https://www.instagram.com/quericomambo_salsa" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <FaInstagram className="text-[#f6bc7c] text-4xl hover:text-[#f6bc7c]/80 transition-colors" />
               </a>
             </div>
