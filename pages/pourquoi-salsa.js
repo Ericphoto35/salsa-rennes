@@ -74,7 +74,7 @@ export default function PourquoiSalsa() {
         <script 
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: `{
               "@context": "https://schema.org",
               "@type": "FAQPage",
               "mainEntity": [{
@@ -92,7 +92,7 @@ export default function PourquoiSalsa() {
                   "text": "La salsa offre de nombreux bienfaits : amélioration du cardio et de la coordination, réduction du stress (90% des danseurs se sentent moins stressés après une session), développement de la confiance en soi, création de liens sociaux et immersion dans une culture riche et passionnante."
                 }
               }]
-            })
+            }`
           }}
         ></script>
       </Head>
