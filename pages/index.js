@@ -1,6 +1,6 @@
 import Seo from '../components/Seo';
 import Link from 'next/link';
-import { FaGraduationCap, FaUserTie, FaClock, FaMapMarkerAlt, FaCalendarAlt, FaUsers } from 'react-icons/fa';
+import { FaGraduationCap, FaUserTie, FaClock, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaFacebook, FaInstagram } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import GoogleReviews from '../components/GoogleReviews';
 
@@ -29,6 +29,14 @@ export default function Home() {
               className="w-full h-auto"
               loading="eager"
             />
+            <div className="flex justify-center mt-3 space-x-8">
+              <a href="https://www.facebook.com/quericomambo" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <FaFacebook className="text-[#f6bc7c] text-4xl hover:text-[#f6bc7c]/80 transition-colors" />
+              </a>
+              <a href="https://www.instagram.com/quericomambo" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <FaInstagram className="text-[#f6bc7c] text-4xl hover:text-[#f6bc7c]/80 transition-colors" />
+              </a>
+            </div>
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 md:mb-6 text-[#f6bc7c] leading-tight">
             Apprenez la Salsa à Rennes
