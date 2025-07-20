@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <!-- Pages principales -->
+  <url>
+    <loc>https://www.salsarennes.fr/</loc>
+    <lastmod>2025-07-20T11:00:00+02:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.salsarennes.fr/pourquoi-salsa</loc>
+    <lastmod>2025-07-20T11:00:00+02:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.salsarennes.fr/inscription</loc>
+    <lastmod>2025-07-20T11:00:00+02:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Pages de niveaux -->
+  <url>
+    <loc>https://www.salsarennes.fr/niveaux/debutant</loc>
+    <lastmod>2025-07-20T11:00:00+02:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.salsarennes.fr/niveaux/intermediaire</loc>
+    <lastmod>2025-07-20T11:00:00+02:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.salsarennes.fr/niveaux/avance</loc>
+    <lastmod>2025-07-20T11:00:00+02:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Pages légales -->
+  <url>
+    <loc>https://www.salsarennes.fr/politique-de-confidentialite</loc>
+    <lastmod>2025-07-20T11:00:00+02:00</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

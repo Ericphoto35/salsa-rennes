@@ -113,7 +113,7 @@ export default function PourquoiSalsa() {
           
           <header className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-black text-[#EF476F] mb-4">
-              Pourquoi fait-on de la salsa en France ?
+              La Salsa en France : Plus qu'une Danse !
             </h1>
           
             <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">Découvrez les raisons profondes qui poussent des milliers de Français à embrasser le rythme enfiévré de la salsa, transformant leurs vies sur et hors de la piste de danse. Une analyse des motivations et des bénéfices qui expliquent l'engouement pour cette danse en France.</p>

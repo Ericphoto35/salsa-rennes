@@ -3,17 +3,85 @@ import Link from 'next/link';
 import { FaGraduationCap, FaUserTie, FaClock, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaFacebook, FaInstagram } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import GoogleReviews from '../components/GoogleReviews';
+import Head from 'next/head';
 
 export default function Home() {
   // TODO: Implement actual authentication logic
   const isLoggedIn = false;
   return (
     <div className="min-h-screen bg-[#2b2b2b]">
+      <Head>
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "DanceSchool",
+              "name": "Salsa Rennes - Qué Rico Mambo",
+              "description": "École de danse salsa à Rennes proposant des cours pour tous niveaux, des débutants aux danseurs confirmés",
+              "url": "https://www.salsarennes.fr",
+              "logo": "https://www.salsarennes.fr/images/logo.png",
+              "image": "https://www.salsarennes.fr/images/clem-eric.webp",
+              "telephone": "+33000000000",
+              "email": "contact@salsarennes.fr",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Rennes",
+                "addressRegion": "Bretagne",
+                "postalCode": "35000",
+                "addressCountry": "FR"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "48.1173",
+                "longitude": "-1.6778"
+              },
+              "openingHours": "Mo,Tu,We,Th 18:00-22:00",
+              "priceRange": "180€/an",
+              "sameAs": [
+                "https://www.facebook.com/quericomambo.fr",
+                "https://www.instagram.com/quericomambo_salsa"
+              ],
+              "offers": {
+                "@type": "Offer",
+                "name": "Cours de salsa à Rennes",
+                "description": "Cours de salsa cubaine et portoricaine pour tous niveaux à Rennes"
+              }
+            }
+          `}
+        </script>
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "Je ne sais pas danser, est-ce que je peux venir au cours débutant ?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Bien sûr, ce cours de salsa à Rennes s'adresse aux personnes qui n'ont jamais dansé la salsa."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Est-ce que je dois venir accompagné ?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Non, tu peux venir seul ou accompagné."
+                  }
+                }
+              ]
+            }
+          `}
+        </script>
+      </Head>
       <Seo
         title="Salsa Rennes - École de danse cubaine et portoricaine à Rennes"
         description="Apprenez la salsa à Rennes avec nos cours en ligne et en présentiel. École de danse cubaine et portoricaine proposant cours, événements, stages et soirées pour tous niveaux à Rennes. Rejoignez la communauté salsa de Rennes."
         url="https://www.salsarennes.fr"
         image="/images/logo.png"
+        keywords="salsa rennes, cours salsa rennes, école de danse rennes, salsa cubaine rennes, salsa portoricaine, apprendre salsa bretagne, soirées salsa rennes, professeurs salsa, danse latine rennes, cours débutant salsa, stage salsa bretagne, salsa on1 on2, bachata rennes, danser à rennes, meilleure école salsa, cours particuliers salsa, qué rico mambo, festival salsa rennes, initiation salsa, cours salsa débutant rennes, apprendre à danser rennes"
       />
 
       <Navbar isLoggedIn={isLoggedIn} />
@@ -186,7 +254,24 @@ export default function Home() {
           </div>
         </div>
         
-        <div className="mt-12 md:mt-16 mb-12 md:mb-16 w-full text-center">
+        <div className="mt-12 md:mt-16 w-full text-center">
+          <h2 className="text-2xl font-semibold mb-6 text-[#f6bc7c]">Questions fréquentes sur nos cours de Salsa à Rennes</h2>
+          <div className="max-w-3xl mx-auto px-4 mb-12">
+            <div className="space-y-6">
+              <div className="bg-[#333] p-6 rounded-lg shadow-lg">
+                <h3 className="text-xl font-medium text-[#f6bc7c] mb-2">Je ne sais pas danser, est-ce que je peux venir au cours débutant ?</h3>
+                <p className="text-white/90">Bien sûr, ce cours de salsa à Rennes s'adresse aux personnes qui n'ont jamais dansé la salsa.</p>
+              </div>
+              
+              <div className="bg-[#333] p-6 rounded-lg shadow-lg">
+                <h3 className="text-xl font-medium text-[#f6bc7c] mb-2">Est-ce que je dois venir accompagné ?</h3>
+                <p className="text-white/90">Non, tu peux venir seul ou accompagné.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mb-12 md:mb-16 w-full text-center">
           <h2 className="text-2xl font-semibold mb-6 text-[#f6bc7c]">Témoignages de nos élèves de Salsa à Rennes</h2>
           <p className="text-white/90 mb-6 max-w-3xl mx-auto px-4">Découvrez ce que nos élèves pensent de nos cours de salsa à Rennes et pourquoi ils nous recommandent.</p>
           <div className="mt-6 md:mt-8 w-full">
