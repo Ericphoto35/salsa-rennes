@@ -166,6 +166,12 @@ export default function Navbar() {
                       Pourquoi la salsa ?
                     </Link>
                     <Link
+                      href="/notre-communaute"
+                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 font-medium"
+                    >
+                      Notre Communauté
+                    </Link>
+                    <Link
                       href="/login"
                       className="text-[#f6bc7c] hover:text-[#f6bc7c]/80"
                     >
