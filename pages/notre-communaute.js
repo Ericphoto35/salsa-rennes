@@ -181,7 +181,7 @@ export async function getServerSideProps() {
     // En développement, utiliser directement localhost
     let apiUrl;
     if (process.env.NODE_ENV === 'development') {
-      apiUrl = 'http://localhost:3000/api/instagram/posts';
+      apiUrl = 'http://www.salsarennes.fr/api/instagram/posts';
     } else {
       const protocol = 'https';
       const host = process.env.VERCEL_URL || 'www.salsarennes.fr';
