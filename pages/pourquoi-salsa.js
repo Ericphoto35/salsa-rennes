@@ -79,7 +79,7 @@ export default function PourquoiSalsa() {
               "@type": "FAQPage",
               "mainEntity": [{
                 "@type": "Question",
-                "name": "Pourquoi fait-on de la salsa en France ?",
+                "name": "Pourquoi fait-on de la salsa en France ??",
                 "acceptedAnswer": {
                   "@type": "Answer",
                   "text": "Les Français pratiquent la salsa pour de nombreuses raisons : les bienfaits physiques (cardio, coordination, flexibilité), les avantages sociaux (rencontres, communauté), l'immersion culturelle et le bien-être mental (réduction du stress). La popularité de la salsa en France a augmenté de 45% ces 5 dernières années."
