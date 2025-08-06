@@ -109,7 +109,7 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
                   <img 
                     src={post.media_url} 
                     alt={post.caption || "Publication Instagram de Salsa Rennes"} 
-                    className="w-full h-64 object-cover hover:opacity-90 transition-opacity"
+                    className="w-full aspect-square object-cover hover:opacity-90 transition-opacity"
                     loading="lazy"
                   />
                 </a>
