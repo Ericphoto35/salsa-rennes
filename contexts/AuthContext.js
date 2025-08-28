@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
     try {
       await supabase.auth.signOut();
       resetAuthState();
-      safeSetState(setAuthError, 'Votre compte est en attente d\'approbation par un administrateur.');
+      safeSetState(setAuthError, '⏳ Votre compte est en attente d\'approbation par un administrateur. Vous recevrez un email de confirmation une fois votre compte validé.');
     } catch (error) {
       console.error('Error during unapproved user signout:', error);
       resetAuthState();
@@ -121,6 +121,15 @@ export function AuthProvider({ children }) {
         console.log('Session checked:', session?.user?.email);
 
         if (session?.user && isMounted.current) {
+          // Vérifier si l'email est confirmé avant de continuer
+          if (!session.user.email_confirmed_at) {
+            console.log('User email not confirmed during init, signing out');
+            await supabase.auth.signOut();
+            resetAuthState();
+            safeSetState(setAuthError, '📧 Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte de réception et cliquez sur le lien de confirmation.');
+            return;
+          }
+
           safeSetState(setUser, session.user);
           try {
             // Ajouter un délai court pour s'assurer que la session est bien établie
@@ -203,6 +212,15 @@ export function AuthProvider({ children }) {
             window.localStorage.removeItem('salsa-rennes-auth-storage');
           }
         } else if (session?.user && isMounted.current) {
+          // Vérifier si l'email est confirmé avant de continuer
+          if (!session.user.email_confirmed_at) {
+            console.log('User email not confirmed in state change, signing out');
+            await supabase.auth.signOut();
+            resetAuthState();
+            safeSetState(setAuthError, '📧 Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte de réception et cliquez sur le lien de confirmation.');
+            return;
+          }
+
           safeSetState(setUser, session.user);
           try {
             // Ajouter un délai court pour s'assurer que la session est bien établie
@@ -282,27 +300,43 @@ export function AuthProvider({ children }) {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: fullName,
+            phone: phone,
+          }
+        }
       });
 
       if (authError) throw authError;
 
-      // Créer le profil utilisateur
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert([
-          {
-            id: authData.user.id,
-            email,
-            full_name: fullName,
-            phone,
-            is_admin: false,
-            is_approved: false,
-          },
-        ]);
+      // Le profil sera créé automatiquement par le trigger
+      // Mais on peut essayer de le créer manuellement en cas d'échec du trigger
+      if (authData.user) {
+        try {
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .insert([
+              {
+                id: authData.user.id,
+                email,
+                full_name: fullName,
+                phone,
+                is_admin: false,
+                is_approved: false,
+              },
+            ]);
+          
+          // Si l'insertion échoue, ce n'est pas grave car le trigger devrait l'avoir créé
+          if (profileError) {
+            console.log('Profile creation via app failed (trigger should handle it):', profileError);
+          }
+        } catch (profileError) {
+          console.log('Profile creation attempt failed, relying on trigger:', profileError);
+        }
+      }
 
-      if (profileError) throw profileError;
-
-      return { error: null, message: 'Inscription réussie. Votre compte est en attente d\'approbation.' };
+      return { error: null, message: '✅ Inscription réussie ! Votre compte est en attente d\'approbation par un administrateur. Vous recevrez un email de confirmation une fois votre compte validé.' };
     } catch (error) {
       console.error('Error in signUp:', error);
       safeSetState(setAuthError, error.message || 'Erreur lors de l\'inscription');
@@ -324,19 +358,37 @@ export function AuthProvider({ children }) {
 
       if (authError) throw authError;
 
+      // Vérifier si l'email est confirmé
+      if (!data.user.email_confirmed_at) {
+        await supabase.auth.signOut();
+        resetAuthState();
+        const emailError = new Error('📧 Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte de réception et cliquez sur le lien de confirmation.');
+        safeSetState(setAuthError, emailError.message);
+        throw emailError;
+      }
+
       // Vérifier si l'utilisateur est approuvé
       const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
         .select('is_approved')
         .eq('id', data.user.id)
-        .single();
+        .maybeSingle();
 
       if (profileError) throw profileError;
+
+      // Si aucun profil n'existe, l'utilisateur n'est pas approuvé
+      if (!profile) {
+        await supabase.auth.signOut();
+        resetAuthState();
+        const approvalError = new Error('🔒 Aucun profil trouvé. Veuillez vous inscrire d\'abord ou contacter l\'administrateur.');
+        safeSetState(setAuthError, approvalError.message);
+        throw approvalError;
+      }
 
       if (!profile.is_approved) {
         await supabase.auth.signOut();
         resetAuthState();
-        const approvalError = new Error('Votre compte est en attente d\'approbation par un administrateur.');
+        const approvalError = new Error('⏳ Votre compte est en attente d\'approbation par un administrateur. Vous recevrez un email de confirmation une fois votre compte validé.');
         safeSetState(setAuthError, approvalError.message);
         throw approvalError;
       }
