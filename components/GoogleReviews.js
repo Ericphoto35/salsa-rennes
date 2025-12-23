@@ -15,7 +15,7 @@ export default function GoogleReviews() {
       try {
         const response = await fetch('/api/google-reviews');
         const data = await response.json();
-        setReviews(data.reviews);
+        setReviews(Array.isArray(data.reviews) ? data.reviews : []);
       } catch (error) {
         console.error('Erreur lors de la récupération des avis:', error);
       } finally {
@@ -40,7 +40,7 @@ export default function GoogleReviews() {
         <FaGoogle className="text-[#f6bc7c] text-2xl md:text-3xl" />
         <h2 className="text-xl md:text-2xl font-semibold text-[#f6bc7c]">Avis Google</h2>
       </div>
-      
+
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={16}
@@ -55,7 +55,7 @@ export default function GoogleReviews() {
         }}
         className="py-4 md:py-8"
       >
-        {reviews.map((review, index) => (
+        {Array.isArray(reviews) && reviews.map((review, index) => (
           <SwiperSlide key={index}>
             <div className="bg-[#363636] p-4 md:p-6 rounded-lg shadow-lg h-full">
               <div className="flex items-center mb-4">

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import Seo from '../components/Seo';
@@ -55,19 +56,19 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-[#f6bc7c] mb-4">Notre Communauté Salsa à Rennes</h1>
           <p className="text-white/90 text-lg max-w-2xl mx-auto">
-            Découvrez les moments forts de notre école de salsa à Rennes à travers nos publications Instagram. 
+            Découvrez les moments forts de notre école de salsa à Rennes à travers nos publications Instagram.
             Rejoignez notre communauté passionnée de danseurs !
           </p>
-          <a 
-            href="https://www.instagram.com/quericomambo_salsa" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://www.instagram.com/quericomambo_salsa"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center text-[#f6bc7c] hover:text-white mt-4 transition-colors"
           >
             <FaInstagram className="mr-2 text-xl" />
             Suivez-nous sur Instagram
           </a>
-          
+
           {usingMockData && (
             <div className="mt-4 bg-yellow-500/20 text-yellow-500 py-2 px-4 rounded-lg inline-block">
               <p className="text-sm font-medium">
@@ -86,10 +87,10 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
             <p>{error}</p>
             <p className="mt-2">
               En attendant, vous pouvez consulter notre profil Instagram directement{' '}
-              <a 
-                href="https://www.instagram.com/quericomambo_salsa" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://www.instagram.com/quericomambo_salsa"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="underline hover:text-white"
               >
                 ici
@@ -100,18 +101,22 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
               <div key={post.id} className="bg-[#333333] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                <a 
-                  href={post.permalink} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={post.permalink}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="block"
                 >
-                  <img 
-                    src={post.media_url} 
-                    alt={post.caption || "Publication Instagram de Salsa Rennes"} 
-                    className="w-full aspect-square object-cover hover:opacity-90 transition-opacity"
-                    loading="lazy"
-                  />
+                  <div className="relative w-full aspect-square">
+                    <Image
+                      src={post.media_url}
+                      alt={post.caption || "Publication Instagram de Salsa Rennes"}
+                      fill
+                      className="object-cover hover:opacity-90 transition-opacity"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      unoptimized={!post.media_url.includes('placehold.co')} // Optimiser seulement les placeholders connus, éviter les erreurs sur les domaines IG dynamiques
+                    />
+                  </div>
                 </a>
                 <div className="p-4">
                   {post.caption && (
@@ -121,10 +126,10 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
                   )}
                   <div className="flex justify-between items-center mt-2 text-sm text-white/70">
                     <span>{formatDate(post.timestamp)}</span>
-                    <a 
-                      href={post.permalink} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={post.permalink}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-[#f6bc7c] hover:text-white transition-colors"
                     >
                       Voir sur Instagram
@@ -141,10 +146,10 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
             <p>Aucune publication Instagram n'a été trouvée.</p>
             <p className="mt-2">
               Consultez notre profil Instagram{' '}
-              <a 
-                href="https://www.instagram.com/quericomambo_salsa" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://www.instagram.com/quericomambo_salsa"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-[#f6bc7c] hover:text-white transition-colors"
               >
                 ici
@@ -158,11 +163,11 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold text-[#f6bc7c] mb-6">Rejoignez notre communauté salsa à Rennes</h2>
           <p className="text-white/90 max-w-2xl mx-auto mb-8">
-            Suivez-nous sur Instagram pour découvrir nos événements, cours et soirées salsa à Rennes. 
+            Suivez-nous sur Instagram pour découvrir nos événements, cours et soirées salsa à Rennes.
             Partagez vos moments de danse avec le hashtag #SalsaRennes !
           </p>
-          <a 
-            href="/inscription" 
+          <a
+            href="/inscription"
             className="inline-block bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#2b2b2b] px-8 py-3 rounded-full text-lg font-bold hover:from-[#e8a254] hover:to-[#f6bc7c] transition-all duration-300 shadow-lg"
           >
             Rejoindre nos cours
@@ -187,19 +192,19 @@ export async function getServerSideProps() {
       const host = process.env.VERCEL_URL || 'www.salsarennes.fr';
       apiUrl = `${protocol}://${host}/api/instagram/posts`;
     }
-    
+
     console.log('Débogage Notre Communauté - URL API:', apiUrl);
     const response = await fetch(apiUrl);
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Erreur lors de la récupération des publications Instagram:', errorText);
       throw new Error('Erreur lors de la récupération des publications Instagram');
     }
-    
+
     const data = await response.json();
     console.log('Débogage Notre Communauté - Réponse API:', JSON.stringify(data).substring(0, 200) + '...');
-    
+
     // Si l'API renvoie une erreur, utiliser des données fictives
     if (data.error) {
       console.warn('Utilisation de données fictives car l\'API a renvoyé une erreur:', data.error);
@@ -211,10 +216,10 @@ export async function getServerSideProps() {
         }
       };
     }
-    
+
     // Vérifier si nous avons des publications
     console.log('Débogage Notre Communauté - Nombre de publications:', data.posts ? data.posts.length : 0);
-    
+
     return {
       props: {
         initialPosts: data.posts || [],

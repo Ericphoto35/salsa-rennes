@@ -11,8 +11,8 @@ const nextConfig = {
   },
   swcMinify: true,
   images: {
-    domains: ['maps.googleapis.com'],
-    unoptimized: true, // Désactiver l'optimisation d'images pour résoudre le problème fetchPriority
+    domains: ['maps.googleapis.com', 'placehold.co'],
+    // unoptimized: true, // Désactivé pour rétablir l'optimisation SEO
   },
 }
 
