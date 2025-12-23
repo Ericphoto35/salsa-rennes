@@ -1,14 +1,26 @@
 export default async function handler(req, res) {
   const baseUrl = 'https://www.salsarennes.fr';
-  // N'inclure que les pages publiques
+  
   const pages = [
-    '', // Accueil
-    'inscription',
-    // Ajouter d'autres pages publiques manuellement si besoin
+    { url: '', changefreq: 'weekly', priority: '1.0' },
+    { url: 'pourquoi-salsa', changefreq: 'monthly', priority: '0.9' },
+    { url: 'inscription', changefreq: 'monthly', priority: '0.8' },
+    { url: 'niveaux/debutant', changefreq: 'monthly', priority: '0.8' },
+    { url: 'niveaux/intermediaire', changefreq: 'monthly', priority: '0.8' },
+    { url: 'niveaux/avance', changefreq: 'monthly', priority: '0.8' },
+    { url: 'politique-de-confidentialite', changefreq: 'yearly', priority: '0.3' },
   ];
+
   const urls = pages.map(
-    (page) =>
-      `<url><loc>${baseUrl}/${page}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`
+    ({ url, changefreq, priority }) => {
+      const path = url ? `/${url}` : '';
+      return `
+    <url>
+      <loc>${baseUrl}${path}</loc>
+      <changefreq>${changefreq}</changefreq>
+      <priority>${priority}</priority>
+    </url>`;
+    }
   ).join('');
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
