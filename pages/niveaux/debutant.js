@@ -3,8 +3,8 @@ import Navbar from '../../components/Navbar';
 import ProtectedRoute from '../../components/ProtectedRoute';
 
 const videos = [
-  { id: '1', title: 'Pas de base salsa', url: 'https://www.youtube.com/embed/XXXXX' },
-  { id: '2', title: 'Position de base', url: 'https://www.youtube.com/embed/XXXXX' },
+  { id: '1', title: 'Pas de base salsa', url: 'https://youtube.com/shorts/W_9iCFwwey0?si=rnsfoP88EvWmVyVa' },
+  { id: '2', title: 'Position de base', url: 'https://youtube.com/shorts/W_9iCFwwey0?si=rnsfoP88EvWmVyVa' },
 ];
 
 export default function Debutant() {

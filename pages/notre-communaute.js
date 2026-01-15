@@ -72,8 +72,18 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
           {usingMockData && (
             <div className="mt-4 bg-yellow-500/20 text-yellow-500 py-2 px-4 rounded-lg inline-block">
               <p className="text-sm font-medium">
-                Mode démo : affichage de données fictives. Pour voir vos vraies publications Instagram, configurez votre token d'accès.
+                Mode démo : affichage de données fictives.
               </p>
+              {apiErrorState && (
+                <p className="text-sm mt-1 text-red-400">
+                  Erreur : {typeof apiErrorState === 'string' ? apiErrorState : JSON.stringify(apiErrorState)}
+                </p>
+              )}
+              {!apiErrorState && (
+                <p className="text-sm mt-1">
+                  Pour voir vos vraies publications Instagram, configurez votre token d'accès.
+                </p>
+              )}
             </div>
           )}
         </div>
