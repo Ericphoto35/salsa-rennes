@@ -3,8 +3,9 @@ import Navbar from '../../components/Navbar';
 import ProtectedRoute from '../../components/ProtectedRoute';
 
 const videos = [
-  { id: '1', title: 'Figures intermédiaires', url: 'https://www.youtube.com/embed/XXXXX' },
-  { id: '2', title: 'Combinaisons de pas', url: 'https://www.youtube.com/embed/XXXXX' },
+  { id: '1', title: 'Figures intermédiaires', url: 'https://www.youtube.com/embed/Q-BGFOCdYnc' },
+  { id: '2', title: 'Combinaisons de pas', url: 'https://www.youtube.com/embed/2yQHozcJBu8' },
+  { id: '3', title: 'Combinaisons de pas', url: 'https://www.youtube.com/embed/Q-BGFOCdYnc' },
 ];
 
 export default function Intermediaire() {
