@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { supabase } from '../lib/supabase';
+import { auth, firebaseSignOut } from '../lib/firebase';
+import { cleanAuthStorage } from '../lib/authUtils';
 import { FaSpinner, FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa';
 
 export default function SessionRecovery() {
@@ -15,24 +16,11 @@ export default function SessionRecovery() {
         setLoading(true);
         setError(null);
 
-        // 1. Nettoyer complètement le stockage local
-        if (typeof window !== 'undefined') {
-          console.log('Clearing localStorage...');
-          window.localStorage.removeItem('salsa-rennes-auth-storage');
-          window.localStorage.removeItem('supabase.auth.token');
-          
-          // Supprimer tous les éléments du localStorage liés à Supabase
-          Object.keys(window.localStorage)
-            .filter(key => key.includes('supabase') || key.includes('sb-'))
-            .forEach(key => {
-              console.log(`Removing localStorage key: ${key}`);
-              window.localStorage.removeItem(key);
-            });
-        }
+        // 1. Nettoyer le stockage local
+        cleanAuthStorage();
 
         // 2. Déconnecter l'utilisateur actuel
-        console.log('Signing out current user...');
-        await supabase.auth.signOut();
+        await firebaseSignOut(auth);
 
         // 3. Attendre un court instant pour s'assurer que tout est bien nettoyé
         await new Promise(resolve => setTimeout(resolve, 500));

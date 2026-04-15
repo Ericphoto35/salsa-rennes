@@ -1,7 +1,16 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { supabase, checkSession, fetchUserProfileWithRetry } from '../lib/supabase';
-import { cleanAuthStorage, validateAndCleanSession } from '../lib/authUtils';
+import {
+  auth,
+  fetchUserProfile,
+  createUserProfile,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  firebaseSignOut,
+  onAuthStateChanged,
+  sendEmailVerification,
+} from '../lib/firebase';
+import { cleanAuthStorage } from '../lib/authUtils';
 
 const AuthContext = createContext({});
 
@@ -13,446 +22,176 @@ export function AuthProvider({ children }) {
   const isMounted = useRef(true);
   const router = useRouter();
 
-  const fetchUserProfile = useCallback(async (userId) => {
-    if (!userId) return null;
-    
+  const safeSet = useCallback((setter, value) => {
+    if (isMounted.current) setter(value);
+  }, []);
+
+  const resetAuthState = useCallback(() => {
+    safeSet(setUser, null);
+    safeSet(setUserProfile, null);
+    safeSet(setAuthError, null);
+  }, [safeSet]);
+
+  const loadProfile = useCallback(async (firebaseUser) => {
     try {
-      console.log('Fetching user profile for:', userId);
-      
-      // Utiliser la nouvelle fonction avec réessais automatiques
-      const data = await fetchUserProfileWithRetry(userId, 3);
-      
-      console.log('User profile fetched:', data);
-      if (isMounted.current) {
-        setUserProfile(data);
-      }
-      return data;
-    } catch (error) {
-      console.error('Error in fetchUserProfile:', error);
-      if (isMounted.current) {
-        setUserProfile(null);
-        setAuthError('Erreur lors de la récupération du profil utilisateur');
-      }
+      const profile = await fetchUserProfile(firebaseUser.uid);
+      if (isMounted.current) setUserProfile(profile);
+      return profile;
+    } catch (err) {
+      console.error('Erreur chargement profil:', err);
+      if (isMounted.current) setUserProfile(null);
       return null;
     }
   }, []);
 
-  // Gestion sécurisée des états d'authentification
-  const safeSetState = useCallback((setter, value) => {
-    if (isMounted.current) {
-      setter(value);
-    }
-  }, []);
-
-  // Réinitialiser les états d'authentification
-  const resetAuthState = useCallback(() => {
-    safeSetState(setUser, null);
-    safeSetState(setUserProfile, null);
-    safeSetState(setAuthError, null);
-  }, [safeSetState]);
-
-  // Gérer la déconnexion en cas d'utilisateur non approuvé
-  const handleUnapprovedUser = useCallback(async () => {
-    console.log('User not approved, signing out');
-    try {
-      await supabase.auth.signOut();
-      resetAuthState();
-      safeSetState(setAuthError, '⏳ Votre compte est en attente d\'approbation par un administrateur. Vous recevrez un email de confirmation une fois votre compte validé.');
-    } catch (error) {
-      console.error('Error during unapproved user signout:', error);
-      resetAuthState();
-    }
-  }, [resetAuthState, safeSetState]);
-
-  // Vérification périodique de la validité de la session
+  // Écouter les changements d'état Firebase Auth
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    // Vérifier la validité de la session toutes les 30 minutes
-    const sessionCheckInterval = 30 * 60 * 1000; // 30 minutes
-    
-    const checkSessionValidity = async () => {
-      if (!user) return; // Ne pas vérifier si l'utilisateur n'est pas connecté
-      
-      console.log('Vérification périodique de la validité de la session...');
-      const isValid = await validateAndCleanSession(supabase);
-      
-      if (!isValid && isMounted.current) {
-        console.log('Session invalide détectée lors de la vérification périodique, déconnexion...');
-        // La session n'est plus valide, déconnecter l'utilisateur
-        resetAuthState();
-        safeSetState(setAuthError, 'Votre session a expiré. Veuillez vous reconnecter.');
-        
-        // Forcer un rafraîchissement de la page
-        if (typeof window !== 'undefined') {
-          window.location.replace('/');
-        }
-      }
-    };
-    
-    // Vérifier immédiatement au démarrage
-    if (user) {
-      checkSessionValidity();
-    }
-    
-    // Configurer la vérification périodique
-    const intervalId = setInterval(checkSessionValidity, sessionCheckInterval);
-    
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [user, resetAuthState, safeSetState]);
-
-  // Initialiser l'authentification
-  useEffect(() => {
-    console.log('AuthProvider initialized');
     isMounted.current = true;
 
-    const initAuth = async () => {
-      try {
-        safeSetState(setLoading, true);
-        safeSetState(setAuthError, null);
-        
-        // Vérifier la session utilisateur avec la fonction utilitaire améliorée
-        const { session, error: sessionError } = await checkSession();
-        
-        if (sessionError) throw sessionError;
-        
-        console.log('Session checked:', session?.user?.email);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!isMounted.current) return;
 
-        if (session?.user && isMounted.current) {
-          // Vérifier si l'email est confirmé avant de continuer
-          if (!session.user.email_confirmed_at) {
-            console.log('User email not confirmed during init, signing out');
-            await supabase.auth.signOut();
-            resetAuthState();
-            safeSetState(setAuthError, '📧 Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte de réception et cliquez sur le lien de confirmation.');
-            return;
-          }
+      safeSet(setLoading, true);
+      safeSet(setAuthError, null);
 
-          safeSetState(setUser, session.user);
-          try {
-            // Ajouter un délai court pour s'assurer que la session est bien établie
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // Essayer de récupérer le profil avec gestion d'erreur améliorée
-            try {
-              const profile = await fetchUserProfile(session.user.id);
-              
-              // Vérifier si c'est un profil d'urgence (créé en cas d'erreur réseau)
-              if (profile.emergency_profile) {
-                console.warn('Using emergency profile due to network issues');
-                safeSetState(setUserProfile, profile);
-                // Ne pas déconnecter l'utilisateur, mais planifier une nouvelle tentative
-                setTimeout(() => {
-                  if (isMounted.current) {
-                    fetchUserProfile(session.user.id).catch(e => {
-                      console.log('Background profile refresh failed:', e);
-                    });
-                  }
-                }, 30000); // Réessayer dans 30 secondes
-              } else if (!profile.is_approved) {
-                await handleUnapprovedUser();
-              }
-            } catch (profileError) {
-              console.error('Error fetching profile, but will continue session:', profileError);
-              // Ne pas déconnecter l'utilisateur en cas d'erreur réseau temporaire
-              // sauf si explicitement demandé par l'utilisateur
-              if (profileError.message && profileError.message.includes('not approved')) {
-                await handleUnapprovedUser();
-              }
-            }
-          } catch (profileError) {
-            console.error('Error fetching profile during init:', profileError);
-            // En cas d'erreur de profil, on force une déconnexion pour éviter l'état bloqué
-            await supabase.auth.signOut();
-            resetAuthState();
-            // Forcer une actualisation complète en production
-            if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
-              window.localStorage.removeItem('salsa-rennes-auth-storage');
-              window.location.href = '/';
-            }
-          }
-        } else if (isMounted.current) {
+      if (firebaseUser) {
+        // Vérifier que l'email est confirmé
+        if (!firebaseUser.emailVerified) {
+          safeSet(setUser, null);
+          safeSet(setUserProfile, null);
+          safeSet(setAuthError, '📧 Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte de réception et cliquez sur le lien de confirmation.');
+          safeSet(setLoading, false);
+          return;
+        }
+
+        safeSet(setUser, firebaseUser);
+
+        const profile = await loadProfile(firebaseUser);
+
+        if (profile && !profile.is_approved) {
+          // Déconnecter les utilisateurs non approuvés
+          await firebaseSignOut(auth);
           resetAuthState();
+          safeSet(setAuthError, '⏳ Votre compte est en attente d\'approbation par un administrateur. Vous recevrez un email de confirmation une fois votre compte validé.');
         }
-      } catch (error) {
-        console.error('Error in initAuth:', error);
-        if (isMounted.current) {
-          resetAuthState();
-          safeSetState(setAuthError, 'Erreur d\'initialisation de l\'authentification');
-          // Forcer une actualisation complète en cas d'erreur en production
-          if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
-            window.localStorage.removeItem('salsa-rennes-auth-storage');
-          }
-        }
-      } finally {
-        if (isMounted.current) {
-          safeSetState(setLoading, false);
-        }
+      } else {
+        resetAuthState();
       }
-    };
 
-    initAuth();
-
-    // Écouter les changements d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email);
-      
-      try {
-        safeSetState(setLoading, true);
-        safeSetState(setAuthError, null);
-
-        if (event === 'SIGNED_OUT') {
-          console.log('User signed out, cleaning up state');
-          resetAuthState();
-          
-          // En production, s'assurer que le stockage local est nettoyé
-          if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
-            window.localStorage.removeItem('salsa-rennes-auth-storage');
-          }
-        } else if (session?.user && isMounted.current) {
-          // Vérifier si l'email est confirmé avant de continuer
-          if (!session.user.email_confirmed_at) {
-            console.log('User email not confirmed in state change, signing out');
-            await supabase.auth.signOut();
-            resetAuthState();
-            safeSetState(setAuthError, '📧 Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte de réception et cliquez sur le lien de confirmation.');
-            return;
-          }
-
-          safeSetState(setUser, session.user);
-          try {
-            // Ajouter un délai court pour s'assurer que la session est bien établie
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // Essayer de récupérer le profil avec gestion d'erreur améliorée
-            try {
-              const profile = await fetchUserProfile(session.user.id);
-              
-              // Vérifier si c'est un profil d'urgence (créé en cas d'erreur réseau)
-              if (profile.emergency_profile) {
-                console.warn('Using emergency profile due to network issues during state change');
-                safeSetState(setUserProfile, profile);
-                // Ne pas déconnecter l'utilisateur, mais planifier une nouvelle tentative
-                setTimeout(() => {
-                  if (isMounted.current) {
-                    fetchUserProfile(session.user.id).catch(e => {
-                      console.log('Background profile refresh failed:', e);
-                    });
-                  }
-                }, 30000); // Réessayer dans 30 secondes
-              } else if (!profile.is_approved) {
-                await handleUnapprovedUser();
-              }
-            } catch (profileError) {
-              console.error('Error fetching profile during state change, but will continue session:', profileError);
-              // Ne pas déconnecter l'utilisateur en cas d'erreur réseau temporaire
-              // sauf si explicitement demandé par l'utilisateur
-              if (profileError.message && profileError.message.includes('not approved')) {
-                await handleUnapprovedUser();
-              }
-            }
-          } catch (profileError) {
-            console.error('Error fetching profile during state change:', profileError);
-            // En cas d'erreur de profil, on force une déconnexion pour éviter l'état bloqué
-            await supabase.auth.signOut();
-            resetAuthState();
-            
-            // Forcer une actualisation complète en production
-            if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
-              window.localStorage.removeItem('salsa-rennes-auth-storage');
-              window.location.href = '/';
-            }
-          }
-        } else if (isMounted.current) {
-          resetAuthState();
-        }
-      } catch (error) {
-        console.error('Error in auth state change handler:', error);
-        if (isMounted.current) {
-          resetAuthState();
-          safeSetState(setAuthError, 'Erreur lors du changement d\'état d\'authentification');
-          
-          // Nettoyer le stockage local en cas d'erreur
-          if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
-            window.localStorage.removeItem('salsa-rennes-auth-storage');
-          }
-        }
-      } finally {
-        if (isMounted.current) {
-          safeSetState(setLoading, false);
-        }
-      }
+      safeSet(setLoading, false);
     });
 
     return () => {
       isMounted.current = false;
-      subscription.unsubscribe();
+      unsubscribe();
     };
-  }, [fetchUserProfile, handleUnapprovedUser, resetAuthState, safeSetState]);
+  }, [loadProfile, resetAuthState, safeSet]);
+
+  // ─── Inscription ────────────────────────────────────────────────────────────
 
   const signUp = async ({ email, password, fullName, phone }) => {
     try {
-      safeSetState(setLoading, true);
-      safeSetState(setAuthError, null);
-      
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            phone: phone,
-          }
-        }
-      });
+      safeSet(setLoading, true);
+      safeSet(setAuthError, null);
 
-      if (authError) throw authError;
+      const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
 
-      // Le profil sera créé automatiquement par le trigger
-      // Mais on peut essayer de le créer manuellement en cas d'échec du trigger
-      if (authData.user) {
-        try {
-          const { error: profileError } = await supabase
-            .from('user_profiles')
-            .insert([
-              {
-                id: authData.user.id,
-                email,
-                full_name: fullName,
-                phone,
-                is_admin: false,
-                is_approved: false,
-              },
-            ]);
-          
-          // Si l'insertion échoue, ce n'est pas grave car le trigger devrait l'avoir créé
-          if (profileError) {
-            console.log('Profile creation via app failed (trigger should handle it):', profileError);
-          }
-        } catch (profileError) {
-          console.log('Profile creation attempt failed, relying on trigger:', profileError);
-        }
-      }
+      // Envoyer l'email de confirmation
+      await sendEmailVerification(newUser);
 
-      return { error: null, message: '✅ Inscription réussie ! Votre compte est en attente d\'approbation par un administrateur. Vous recevrez un email de confirmation une fois votre compte validé.' };
+      // Créer le profil dans Firestore
+      await createUserProfile(newUser.uid, { email, full_name: fullName, phone });
+
+      // Déconnecter immédiatement : l'utilisateur doit confirmer son email ET être approuvé
+      await firebaseSignOut(auth);
+      resetAuthState();
+
+      return {
+        error: null,
+        message: '✅ Inscription réussie ! Vérifiez votre email pour confirmer votre compte. Votre compte sera ensuite examiné par un administrateur.',
+      };
     } catch (error) {
-      console.error('Error in signUp:', error);
-      safeSetState(setAuthError, error.message || 'Erreur lors de l\'inscription');
-      return { error };
+      console.error('Erreur inscription:', error);
+      const msg = translateFirebaseError(error.code);
+      safeSet(setAuthError, msg);
+      return { error: { message: msg } };
     } finally {
-      safeSetState(setLoading, false);
+      safeSet(setLoading, false);
     }
   };
 
+  // ─── Connexion ──────────────────────────────────────────────────────────────
+
   const signIn = async (email, password) => {
     try {
-      safeSetState(setLoading, true);
-      safeSetState(setAuthError, null);
-      
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      safeSet(setLoading, true);
+      safeSet(setAuthError, null);
 
-      if (authError) throw authError;
+      const { user: firebaseUser } = await signInWithEmailAndPassword(auth, email, password);
 
-      // Vérifier si l'email est confirmé
-      if (!data.user.email_confirmed_at) {
-        await supabase.auth.signOut();
+      // Vérifier l'email confirmé
+      if (!firebaseUser.emailVerified) {
+        await firebaseSignOut(auth);
         resetAuthState();
-        const emailError = new Error('📧 Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte de réception et cliquez sur le lien de confirmation.');
-        safeSetState(setAuthError, emailError.message);
-        throw emailError;
+        const msg = '📧 Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte de réception et cliquez sur le lien de confirmation.';
+        safeSet(setAuthError, msg);
+        return { error: { message: msg } };
       }
 
-      // Vérifier si l'utilisateur est approuvé
-      const { data: profile, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('is_approved')
-        .eq('id', data.user.id)
-        .maybeSingle();
+      // Vérifier l'approbation admin
+      const profile = await fetchUserProfile(firebaseUser.uid);
 
-      if (profileError) throw profileError;
-
-      // Si aucun profil n'existe, l'utilisateur n'est pas approuvé
       if (!profile) {
-        await supabase.auth.signOut();
+        await firebaseSignOut(auth);
         resetAuthState();
-        const approvalError = new Error('🔒 Aucun profil trouvé. Veuillez vous inscrire d\'abord ou contacter l\'administrateur.');
-        safeSetState(setAuthError, approvalError.message);
-        throw approvalError;
+        const msg = '🔒 Aucun profil trouvé. Veuillez vous inscrire ou contacter l\'administrateur.';
+        safeSet(setAuthError, msg);
+        return { error: { message: msg } };
       }
 
       if (!profile.is_approved) {
-        await supabase.auth.signOut();
+        await firebaseSignOut(auth);
         resetAuthState();
-        const approvalError = new Error('⏳ Votre compte est en attente d\'approbation par un administrateur. Vous recevrez un email de confirmation une fois votre compte validé.');
-        safeSetState(setAuthError, approvalError.message);
-        throw approvalError;
+        const msg = '⏳ Votre compte est en attente d\'approbation par un administrateur. Vous recevrez un email de confirmation une fois votre compte validé.';
+        safeSet(setAuthError, msg);
+        return { error: { message: msg } };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Error in signIn:', error);
-      safeSetState(setAuthError, error.message || 'Échec de la connexion. Vérifiez vos identifiants.');
-      return { error };
+      console.error('Erreur connexion:', error);
+      const msg = translateFirebaseError(error.code);
+      safeSet(setAuthError, msg);
+      return { error: { message: msg } };
     } finally {
-      safeSetState(setLoading, false);
+      safeSet(setLoading, false);
     }
   };
+
+  // ─── Déconnexion ────────────────────────────────────────────────────────────
 
   const signOut = async () => {
     try {
-      safeSetState(setLoading, true);
-      safeSetState(setAuthError, null);
-      
-      // Utiliser la fonction utilitaire pour nettoyer tous les cookies et le stockage
+      safeSet(setLoading, true);
       cleanAuthStorage();
-      
-      // Déconnexion de Supabase avec options de nettoyage complètes
-      const { error } = await supabase.auth.signOut({ scope: 'global' });
-      if (error) throw error;
-      
+      await firebaseSignOut(auth);
       resetAuthState();
-      
-      // Attendre un court instant pour s'assurer que toutes les opérations de nettoyage sont terminées
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Forcer un rafraîchissement complet pour éviter les problèmes de cache
       if (typeof window !== 'undefined') {
-        console.log('Forcing page refresh after signout');
-        // Utiliser location.replace au lieu de location.href pour éviter l'historique
         window.location.replace('/');
-        return; // Ne pas continuer l'exécution après la redirection
       }
-      
-      // Fallback au routeur Next.js (ne devrait jamais être atteint)
-      await router.push('/');
     } catch (error) {
-      console.error('Error signing out:', error.message);
-      safeSetState(setAuthError, 'Erreur lors de la déconnexion');
-      
-      // Même en cas d'erreur, essayer de nettoyer les cookies et forcer un rafraîchissement
+      console.error('Erreur déconnexion:', error);
       cleanAuthStorage();
-      
       if (typeof window !== 'undefined') {
-        // Forcer un rafraîchissement complet même en cas d'erreur
         window.location.replace('/');
       }
     } finally {
-      safeSetState(setLoading, false);
+      safeSet(setLoading, false);
     }
   };
 
-  const isAdmin = () => {
-    return userProfile?.is_admin ?? false;
-  };
-
-  const isApproved = () => {
-    return userProfile?.is_approved ?? false;
-  };
+  const isAdmin = () => userProfile?.is_admin ?? false;
+  const isApproved = () => userProfile?.is_approved ?? false;
 
   return (
     <AuthContext.Provider value={{
@@ -465,7 +204,7 @@ export function AuthProvider({ children }) {
       signOut,
       isAdmin,
       isApproved,
-      fetchUserProfile, // Exposer cette fonction peut être utile pour rafraîchir le profil
+      fetchUserProfile: loadProfile,
     }}>
       {children}
     </AuthContext.Provider>
@@ -474,4 +213,20 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   return useContext(AuthContext);
+}
+
+// ─── Traduction des codes d'erreur Firebase ───────────────────────────────────
+
+function translateFirebaseError(code) {
+  const errors = {
+    'auth/user-not-found': 'Aucun compte trouvé avec cet email.',
+    'auth/wrong-password': 'Mot de passe incorrect.',
+    'auth/invalid-credential': 'Email ou mot de passe incorrect.',
+    'auth/email-already-in-use': 'Cet email est déjà utilisé par un autre compte.',
+    'auth/weak-password': 'Le mot de passe doit contenir au moins 6 caractères.',
+    'auth/invalid-email': 'Adresse email invalide.',
+    'auth/too-many-requests': 'Trop de tentatives. Veuillez réessayer plus tard.',
+    'auth/network-request-failed': 'Erreur réseau. Vérifiez votre connexion internet.',
+  };
+  return errors[code] || 'Une erreur est survenue. Veuillez réessayer.';
 }

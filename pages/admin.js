@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import { fetchAllProfiles, updateUserProfile } from '../lib/firebase';
 
 export default function Admin() {
   const [users, setUsers] = useState([]);
@@ -37,17 +37,7 @@ export default function Admin() {
 
   const fetchUsers = async () => {
     try {
-      console.log('Fetching users...');
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching users:', error);
-        throw error;
-      }
-      console.log('Users fetched:', data);
+      const data = await fetchAllProfiles();
       setUsers(data);
     } catch (error) {
       console.error('Error in fetchUsers:', error);
@@ -60,19 +50,7 @@ export default function Admin() {
   const updateUserStatus = async (userId, isApproved) => {
     try {
       setActionLoading(prev => ({ ...prev, [userId]: true }));
-      console.log('Updating user status:', userId, isApproved);
-      
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ is_approved: isApproved })
-        .eq('id', userId);
-
-      if (error) {
-        console.error('Error updating user status:', error);
-        throw error;
-      }
-
-      console.log('User status updated successfully');
+      await updateUserProfile(userId, { is_approved: isApproved });
       await fetchUsers();
     } catch (error) {
       console.error('Error in updateUserStatus:', error);
@@ -85,19 +63,7 @@ export default function Admin() {
   const updateAdminStatus = async (userId, isAdmin) => {
     try {
       setActionLoading(prev => ({ ...prev, [userId + '_admin']: true }));
-      console.log('Updating admin status:', userId, isAdmin);
-      
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ is_admin: isAdmin })
-        .eq('id', userId);
-
-      if (error) {
-        console.error('Error updating admin status:', error);
-        throw error;
-      }
-
-      console.log('Admin status updated successfully');
+      await updateUserProfile(userId, { is_admin: isAdmin });
       await fetchUsers();
     } catch (error) {
       console.error('Error in updateAdminStatus:', error);

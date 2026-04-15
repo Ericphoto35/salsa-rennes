@@ -34,13 +34,15 @@ export default function Profile() {
 
                 <div>
                   <h2 className="text-[#f6bc7c] font-medium mb-2">ID Utilisateur</h2>
-                  <p className="text-white">{user?.id}</p>
+                  <p className="text-white">{user?.uid}</p>
                 </div>
 
                 <div>
                   <h2 className="text-[#f6bc7c] font-medium mb-2">Dernière connexion</h2>
                   <p className="text-white">
-                    {new Date(user?.last_sign_in_at).toLocaleString('fr-FR')}
+                    {user?.metadata?.lastSignInTime
+                      ? new Date(user.metadata.lastSignInTime).toLocaleString('fr-FR')
+                      : '-'}
                   </p>
                 </div>
               </div>
