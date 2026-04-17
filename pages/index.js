@@ -88,7 +88,7 @@ export default function Home() {
 
       {/* ─── HERO ─────────────────────────────────────────────────── */}
       <main>
-        <section className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-20 pb-16 overflow-hidden">
+        <section className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-0 pb-10 md:pt-0 md:pb-16 overflow-hidden">
           {/* Fond décoratif */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#f6bc7c]/5 blur-[120px]" />
@@ -97,7 +97,7 @@ export default function Home() {
 
           <div className="relative text-center max-w-3xl mx-auto">
             {/* Logo + réseaux */}
-            <div className="mb-8 w-[240px] md:w-[340px] relative mx-auto">
+            <div className="mb-3 md:mb-8 w-[160px] sm:w-[200px] md:w-[340px] relative mx-auto">
               <Image
                 src="/images/logo.png"
                 alt="Qué Rico Mambo Salsa"
@@ -108,35 +108,35 @@ export default function Home() {
               />
             </div>
 
-            <div className="flex justify-center gap-4 mb-8">
+            <div className="flex justify-center gap-4 mb-4 md:mb-8">
               <a
                 href="https://www.facebook.com/quericomambo.fr"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 text-[#f6bc7c] hover:bg-[#f6bc7c]/20 hover:border-[#f6bc7c]/40 transition-all duration-300 hover:scale-110"
+                className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/10 bg-white/5 text-[#f6bc7c] hover:bg-[#f6bc7c]/20 hover:border-[#f6bc7c]/40 transition-all duration-300 hover:scale-110"
               >
-                <FaFacebook className="text-lg" />
+                <FaFacebook className="text-base md:text-lg" />
               </a>
               <a
                 href="https://www.instagram.com/quericomambo_salsa"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 text-[#f6bc7c] hover:bg-[#f6bc7c]/20 hover:border-[#f6bc7c]/40 transition-all duration-300 hover:scale-110"
+                className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/10 bg-white/5 text-[#f6bc7c] hover:bg-[#f6bc7c]/20 hover:border-[#f6bc7c]/40 transition-all duration-300 hover:scale-110"
               >
-                <FaInstagram className="text-lg" />
+                <FaInstagram className="text-base md:text-lg" />
               </a>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-5 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 md:mb-5 leading-tight">
               <span className="text-white">Apprenez la </span>
               <span className="text-[#f6bc7c]">Salsa</span>
               <br className="hidden sm:block" />
               <span className="text-white"> à Rennes</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl mb-10 max-w-2xl mx-auto text-white/60 leading-relaxed">
-              Découvrez notre méthode unique d'apprentissage, du niveau débutant à avancé,
+            <p className="text-sm sm:text-base md:text-xl mb-6 md:mb-10 max-w-2xl mx-auto text-white/60 leading-relaxed">
+              Découvrez notre méthode unique d&apos;apprentissage, du niveau débutant à avancé,
               avec des cours adaptés à tous les profils et tous les âges.
             </p>
 
