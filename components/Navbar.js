@@ -10,11 +10,16 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [navError, setNavError] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  // Fonction pour rafraîchir le profil utilisateur en cas de problème
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const refreshUserProfile = useCallback(async () => {
     if (!user) return;
-    
     try {
       setIsRefreshing(true);
       setNavError('');
@@ -29,15 +34,11 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
-    
-    // Réinitialiser les erreurs de navigation lorsque l'état d'authentification change
     if (authError) {
       setNavError(authError);
     } else {
       setNavError('');
     }
-
-    // Si l'utilisateur est connecté mais qu'il n'y a pas de profil, essayer de rafraîchir
     if (mounted && user && !userProfile && !loading) {
       refreshUserProfile();
     }
@@ -56,104 +57,145 @@ export default function Navbar() {
     }
   };
 
-  // Ne rien afficher jusqu'à ce que le composant soit monté côté client
-  if (!mounted) {
-    return null;
-  }
-  
-  // Fonction pour afficher un indicateur de chargement
+  if (!mounted) return null;
+
   const renderLoadingState = () => (
     <div className="flex items-center justify-center text-[#f6bc7c] opacity-70">
       <FaSpinner className="animate-spin mr-2" />
-      <span>Chargement...</span>
+      <span className="text-sm">Chargement...</span>
     </div>
   );
 
   return (
-    <nav className="fixed w-full bg-[#2b2b2b] shadow-lg z-50">
-      <div className="container mx-auto px-4">
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-[#121212]/95 backdrop-blur-md shadow-lg shadow-black/30 border-b border-white/5'
+          : 'bg-[#121212]/80 backdrop-blur-sm'
+      }`}
+    >
+      <div className="container mx-auto px-4 md:px-6">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="text-[#f6bc7c] text-xl font-bold">
-            Salsa Rennes
+          <Link
+            href="/"
+            className="text-[#f6bc7c] text-lg font-bold tracking-wide hover:text-white transition-colors duration-200"
+          >
+            Salsa <span className="text-white/60 font-normal">Rennes</span>
           </Link>
 
-          {/* Bouton hamburger */}
+          {/* Hamburger */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-[#f6bc7c] hover:text-[#f6bc7c]/80"
+            className="md:hidden text-[#f6bc7c] hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+            aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
           >
-            {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            {isMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
           </button>
 
-          {/* Menu de navigation */}
-          <div
-            className={`${
-              isMenuOpen ? 'flex' : 'hidden'
-            } md:flex flex-col md:flex-row absolute md:relative top-16 md:top-0 left-0 w-full md:w-auto bg-[#2b2b2b] md:bg-transparent py-4 md:py-0 px-4 md:px-0 space-y-4 md:space-y-0 md:space-x-4 items-center shadow-lg md:shadow-none`}
-          >
-            {/* Afficher les erreurs de navigation si présentes */}
+          {/* Menu desktop */}
+          <div className="hidden md:flex items-center gap-1">
             {navError && (
-              <div className="text-red-500 bg-red-500/10 p-2 rounded-md text-sm mb-2 md:mb-0">
-                {navError}
-              </div>
+              <span className="text-red-400 text-sm mr-2">{navError}</span>
             )}
-            
             {loading ? (
               renderLoadingState()
             ) : (
               <>
                 {user && userProfile ? (
-                  <>
-                    <div className="text-white text-sm mr-4">
-                      {userProfile.full_name || userProfile.email}
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-white/60 text-sm">{userProfile.full_name || userProfile.email}</span>
                     {userProfile.is_admin && (
-                      <Link
-                        href="/admin"
-                        className="text-[#f6bc7c] hover:text-[#f6bc7c]/80"
-                      >
+                      <Link href="/admin" className="text-[#f6bc7c] hover:text-white text-sm font-medium transition-colors px-3 py-1.5 rounded-lg hover:bg-white/10">
                         Administration
                       </Link>
                     )}
                     <button
                       onClick={handleSignOut}
                       disabled={isLoggingOut}
-                      className={`text-[#f6bc7c] hover:text-[#f6bc7c]/80 flex items-center ${
-                        isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
+                      className="text-white/60 hover:text-white text-sm transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 disabled:opacity-50"
                     >
-                      {isLoggingOut && <FaSpinner className="animate-spin mr-2" />}
+                      {isLoggingOut && <FaSpinner className="animate-spin" />}
                       {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
                     </button>
-                  </>
+                  </div>
                 ) : user && !userProfile ? (
-                  <>
-                    <div className="text-white text-sm flex items-center">
-                      <FaExclamationTriangle className="text-yellow-500 mr-2" />
-                      Problème de chargement du profil
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <FaExclamationTriangle className="text-yellow-500 text-sm" />
                     <button
                       onClick={refreshUserProfile}
                       disabled={isRefreshing}
-                      className={`bg-[#f6bc7c] text-[#2b2b2b] px-4 py-2 rounded-md hover:bg-[#f6bc7c]/80 flex items-center ${
-                        isRefreshing ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
+                      className="text-[#f6bc7c] text-sm px-3 py-1.5 rounded-lg border border-[#f6bc7c]/30 hover:bg-[#f6bc7c]/10 transition-colors disabled:opacity-50"
                     >
-                      {isRefreshing && <FaSpinner className="animate-spin mr-2" />}
                       {isRefreshing ? 'Rafraîchissement...' : 'Rafraîchir'}
                     </button>
-                    <Link
-                      href="/session-recovery"
-                      className="text-yellow-500 hover:text-yellow-400 mx-2"
+                    <button
+                      onClick={handleSignOut}
+                      className="text-white/60 hover:text-white text-sm transition-colors"
                     >
-                      Réparer la session
+                      Se déconnecter
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <Link
+                      href="/pourquoi-salsa"
+                      className="text-white/70 hover:text-[#f6bc7c] font-medium text-sm transition-colors px-3 py-2 rounded-lg hover:bg-white/5"
+                    >
+                      Pourquoi la salsa ?
                     </Link>
+                    <Link
+                      href="/notre-communaute"
+                      className="text-white/70 hover:text-[#f6bc7c] font-medium text-sm transition-colors px-3 py-2 rounded-lg hover:bg-white/5"
+                    >
+                      Notre Communauté
+                    </Link>
+                    <Link
+                      href="/login"
+                      className="text-white/70 hover:text-white font-medium text-sm transition-colors px-3 py-2 rounded-lg hover:bg-white/5 ml-1"
+                    >
+                      Se connecter
+                    </Link>
+                    <Link
+                      href="/inscription"
+                      className="ml-1 bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#121212] px-5 py-2 rounded-full text-sm font-semibold hover:shadow-lg hover:shadow-[#f6bc7c]/20 transition-all duration-300 hover:scale-105"
+                    >
+                      S'inscrire
+                    </Link>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Menu mobile */}
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isMenuOpen ? 'max-h-80 opacity-100 pb-4' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="border-t border-white/10 pt-4 flex flex-col gap-1">
+            {navError && (
+              <p className="text-red-400 text-sm px-2 pb-2">{navError}</p>
+            )}
+            {loading ? (
+              renderLoadingState()
+            ) : (
+              <>
+                {user && userProfile ? (
+                  <>
+                    <p className="text-white/50 text-sm px-3 py-2">{userProfile.full_name || userProfile.email}</p>
+                    {userProfile.is_admin && (
+                      <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="text-[#f6bc7c] text-sm px-3 py-2 rounded-lg hover:bg-white/5 transition-colors">
+                        Administration
+                      </Link>
+                    )}
                     <button
                       onClick={handleSignOut}
                       disabled={isLoggingOut}
-                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 flex items-center"
+                      className="text-white/60 text-sm text-left px-3 py-2 rounded-lg hover:bg-white/5 transition-colors flex items-center gap-2"
                     >
-                      {isLoggingOut && <FaSpinner className="animate-spin mr-2" />}
+                      {isLoggingOut && <FaSpinner className="animate-spin" />}
                       {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
                     </button>
                   </>
@@ -161,25 +203,29 @@ export default function Navbar() {
                   <>
                     <Link
                       href="/pourquoi-salsa"
-                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-white/70 hover:text-[#f6bc7c] text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       Pourquoi la salsa ?
                     </Link>
                     <Link
                       href="/notre-communaute"
-                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-white/70 hover:text-[#f6bc7c] text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       Notre Communauté
                     </Link>
                     <Link
                       href="/login"
-                      className="text-[#f6bc7c] hover:text-[#f6bc7c]/80"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-white/70 hover:text-white text-sm px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       Se connecter
                     </Link>
                     <Link
                       href="/inscription"
-                      className="bg-[#f6bc7c] text-[#2b2b2b] px-4 py-2 rounded-md hover:bg-[#f6bc7c]/80"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="mt-2 bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#121212] px-5 py-2.5 rounded-full text-sm font-semibold text-center hover:shadow-lg transition-all duration-300"
                     >
                       S'inscrire
                     </Link>

@@ -23,7 +23,7 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
   };
 
   return (
-    <div className="min-h-screen bg-[#2b2b2b]">
+    <div className="min-h-screen bg-[#121212]">
       <Head>
         <script type="application/ld+json">
           {`
@@ -52,10 +52,11 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
 
       <Navbar />
 
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-[#f6bc7c] mb-4">Notre Communauté Salsa à Rennes</h1>
-          <p className="text-white/90 text-lg max-w-2xl mx-auto">
+      <main className="container mx-auto px-4 pt-28 pb-16">
+        <div className="text-center mb-12">
+          <p className="text-[#f6bc7c] text-sm font-semibold uppercase tracking-widest mb-3">Instagram</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Notre Communauté Salsa à Rennes</h1>
+          <p className="text-white/55 text-base max-w-2xl mx-auto mb-5 leading-relaxed">
             Découvrez les moments forts de notre école de salsa à Rennes à travers nos publications Instagram.
             Rejoignez notre communauté passionnée de danseurs !
           </p>
@@ -63,14 +64,14 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
             href="https://www.instagram.com/quericomambo_salsa"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center text-[#f6bc7c] hover:text-white mt-4 transition-colors"
+            className="inline-flex items-center gap-2 text-[#f6bc7c] border border-[#f6bc7c]/30 bg-[#f6bc7c]/5 hover:bg-[#f6bc7c]/15 hover:border-[#f6bc7c]/60 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300"
           >
-            <FaInstagram className="mr-2 text-xl" />
+            <FaInstagram className="text-base" />
             Suivez-nous sur Instagram
           </a>
 
           {usingMockData && (
-            <div className="mt-4 bg-yellow-500/20 text-yellow-500 py-2 px-4 rounded-lg inline-block">
+            <div className="mt-5 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 py-2.5 px-5 rounded-xl inline-block">
               <p className="text-sm font-medium">
                 Mode démo : affichage de données fictives.
               </p>
@@ -80,8 +81,8 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
                 </p>
               )}
               {!apiErrorState && (
-                <p className="text-sm mt-1">
-                  Pour voir vos vraies publications Instagram, configurez votre token d'accès.
+                <p className="text-sm mt-1 text-yellow-400/70">
+                  Pour voir vos vraies publications Instagram, configurez votre token d&apos;accès.
                 </p>
               )}
             </div>
@@ -108,39 +109,40 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {posts.map((post) => (
-              <div key={post.id} className="bg-[#333333] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+              <div key={post.id} className="group bg-[#1e1e1e] border border-white/7 rounded-2xl overflow-hidden hover:border-[#f6bc7c]/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40">
                 <a
                   href={post.permalink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block"
                 >
-                  <div className="relative w-full aspect-square">
+                  <div className="relative w-full aspect-square overflow-hidden">
                     <Image
                       src={post.media_url}
                       alt={post.caption || "Publication Instagram de Salsa Rennes"}
                       fill
-                      className="object-cover hover:opacity-90 transition-opacity"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      unoptimized={!post.media_url.includes('placehold.co')} // Optimiser seulement les placeholders connus, éviter les erreurs sur les domaines IG dynamiques
+                      unoptimized={!post.media_url.includes('placehold.co')}
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                 </a>
                 <div className="p-4">
                   {post.caption && (
-                    <p className="text-white/90 line-clamp-3 mb-2">
+                    <p className="text-white/70 text-sm line-clamp-3 mb-3 leading-relaxed">
                       {post.caption}
                     </p>
                   )}
-                  <div className="flex justify-between items-center mt-2 text-sm text-white/70">
+                  <div className="flex justify-between items-center text-xs text-white/35">
                     <span>{formatDate(post.timestamp)}</span>
                     <a
                       href={post.permalink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#f6bc7c] hover:text-white transition-colors"
+                      className="text-[#f6bc7c] hover:text-white transition-colors font-medium"
                     >
                       Voir sur Instagram
                     </a>
@@ -169,16 +171,16 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
         )}
       </main>
 
-      <div className="bg-[#333333] py-8 text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-[#f6bc7c] mb-6">Rejoignez notre communauté salsa à Rennes</h2>
-          <p className="text-white/90 max-w-2xl mx-auto mb-8">
+      <div className="bg-[#161616] border-t border-white/5 py-16 text-center">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Rejoignez notre communauté salsa à Rennes</h2>
+          <p className="text-white/50 mb-8 leading-relaxed">
             Suivez-nous sur Instagram pour découvrir nos événements, cours et soirées salsa à Rennes.
-            Partagez vos moments de danse avec le hashtag #SalsaRennes !
+            Partagez vos moments de danse avec le hashtag <span className="text-[#f6bc7c]">#SalsaRennes</span> !
           </p>
           <a
             href="/inscription"
-            className="inline-block bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#2b2b2b] px-8 py-3 rounded-full text-lg font-bold hover:from-[#e8a254] hover:to-[#f6bc7c] transition-all duration-300 shadow-lg"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#121212] px-8 py-3.5 rounded-full font-bold hover:shadow-lg hover:shadow-[#f6bc7c]/25 transition-all duration-300 hover:scale-105"
           >
             Rejoindre nos cours
           </a>
