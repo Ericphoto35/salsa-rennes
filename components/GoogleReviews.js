@@ -1,44 +1,15 @@
-import { useState, useEffect } from 'react';
 import { FaStar, FaGoogle } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
-export default function GoogleReviews() {
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch('/api/google-reviews');
-        const data = await response.json();
-        setReviews(Array.isArray(data.reviews) ? data.reviews : []);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des avis:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReviews();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#f6bc7c] mx-auto"></div>
-      </div>
-    );
-  }
+export default function GoogleReviews({ reviews = [] }) {
+  if (!reviews.length) return null;
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8 md:py-12">
       <div className="flex items-center justify-center gap-2 mb-6 md:mb-8">
         <FaGoogle className="text-[#f6bc7c] text-2xl md:text-3xl" />
-        <h2 className="text-xl md:text-2xl font-semibold text-[#f6bc7c]">Avis Google</h2>
+        <p className="text-xl md:text-2xl font-semibold text-[#f6bc7c]">Avis Google</p>
       </div>
 
       <Swiper
@@ -48,38 +19,42 @@ export default function GoogleReviews() {
         navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
+        a11y={{
+          prevSlideMessage: 'Avis précédent',
+          nextSlideMessage: 'Avis suivant',
+        }}
         breakpoints={{
           480: { slidesPerView: 1.2, spaceBetween: 20 },
           640: { slidesPerView: 2, spaceBetween: 24 },
-          1024: { slidesPerView: 3, spaceBetween: 30 }
+          1024: { slidesPerView: 3, spaceBetween: 30 },
         }}
         className="py-4 md:py-8"
       >
-        {Array.isArray(reviews) && reviews.map((review, index) => (
+        {reviews.map((review, index) => (
           <SwiperSlide key={index}>
-            <div className="bg-[#363636] p-4 md:p-6 rounded-lg shadow-lg h-full">
+            <div className="bg-[#1e1e1e] border border-white/7 p-4 md:p-6 rounded-2xl h-full">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-[#f6bc7c] flex items-center justify-center text-[#2b2b2b] font-bold text-xl">
+                <div className="w-11 h-11 rounded-full bg-[#f6bc7c]/20 border border-[#f6bc7c]/30 flex items-center justify-center text-[#f6bc7c] font-bold text-lg flex-shrink-0">
                   {review.author_name?.[0] || '?'}
                 </div>
-                <div className="ml-4">
-                  <h3 className="font-semibold text-white">{review.author_name}</h3>
-                  <div className="flex text-[#f6bc7c]">
+                <div className="ml-3">
+                  <p className="font-semibold text-white text-sm">{review.author_name}</p>
+                  <div className="flex text-[#f6bc7c] mt-0.5">
                     {[...Array(5)].map((_, i) => (
                       <FaStar
                         key={i}
-                        className={i < review.rating ? 'text-[#f6bc7c]' : 'text-gray-400'}
+                        className={`text-xs ${i < review.rating ? 'text-[#f6bc7c]' : 'text-white/20'}`}
                       />
                     ))}
                   </div>
                 </div>
               </div>
-              <p className="text-white/90">{review.text}</p>
-              <p className="text-sm text-white/60 mt-2">
+              <p className="text-white/65 text-sm leading-relaxed">{review.text}</p>
+              <p className="text-xs text-white/30 mt-3">
                 {new Date(review.time * 1000).toLocaleDateString('fr-FR', {
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric'
+                  day: 'numeric',
                 })}
               </p>
             </div>

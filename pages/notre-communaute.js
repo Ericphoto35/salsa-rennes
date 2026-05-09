@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import Seo from '../components/Seo';
+import BreadcrumbSchema from '../components/BreadcrumbSchema';
 import { FaInstagram } from 'react-icons/fa';
 
 export default function NotreCommunaute({ initialPosts, isUsingMockData, apiError }) {
@@ -42,6 +43,10 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
           `}
         </script>
       </Head>
+      <BreadcrumbSchema items={[
+        { name: 'Accueil', url: 'https://www.salsarennes.fr' },
+        { name: 'Notre Communauté', url: 'https://www.salsarennes.fr/notre-communaute' },
+      ]} />
       <Seo
         title="Notre Communauté Salsa à Rennes - Photos et Événements"
         description="Découvrez la communauté dynamique de notre école de salsa à Rennes à travers nos publications Instagram. Rejoignez-nous pour des cours, événements et soirées salsa à Rennes."

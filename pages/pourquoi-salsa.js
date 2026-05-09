@@ -1,5 +1,6 @@
 import Seo from '../components/Seo';
 import Navbar from '../components/Navbar';
+import BreadcrumbSchema from '../components/BreadcrumbSchema';
 import Link from 'next/link';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useEffect } from 'react';
@@ -75,6 +76,10 @@ export default function PourquoiSalsa() {
         />
       </Head>
 
+      <BreadcrumbSchema items={[
+        { name: 'Accueil', url: 'https://www.salsarennes.fr' },
+        { name: 'Pourquoi la salsa ?', url: 'https://www.salsarennes.fr/pourquoi-salsa' },
+      ]} />
       <Seo
         title="Pourquoi fait-on de la salsa en France ? Les bienfaits et motivations - Salsa Rennes"
         description="Découvrez pourquoi la salsa est si populaire en France : bienfaits physiques et mentaux, lien social, immersion culturelle et plaisir. Témoignages et statistiques sur la pratique de la salsa en France."

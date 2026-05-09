@@ -1,349 +1,818 @@
-import Seo from '../components/Seo';
-import Image from 'next/image';
-import Link from 'next/link';
-import { FaGraduationCap, FaUserTie, FaClock, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaFacebook, FaInstagram, FaArrowRight } from 'react-icons/fa';
-import Navbar from '../components/Navbar';
-import GoogleReviews from '../components/GoogleReviews';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import Seo from '../components/Seo';
+import { getGoogleReviews } from '../lib/getGoogleReviews';
 
-export default function Home() {
-  const isLoggedIn = false;
+const GoogleReviews = dynamic(() => import('../components/GoogleReviews'), { ssr: false });
+
+export default function Home({ reviews, rating, userRatingsTotal }) {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  const danceSchoolSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'DanceSchool',
+    name: 'Salsa Rennes - Qué Rico Mambo',
+    description: 'École de danse salsa à Rennes proposant des cours pour tous niveaux, des débutants aux danseurs confirmés',
+    url: 'https://www.salsarennes.fr',
+    logo: 'https://www.salsarennes.fr/images/logo.png',
+    image: 'https://www.salsarennes.fr/images/clem-eric.webp',
+    telephone: '+33761461982',
+    email: 'contact@quericomambo.fr',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Rennes',
+      addressRegion: 'Bretagne',
+      postalCode: '35000',
+      addressCountry: 'FR',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: '48.1173',
+      longitude: '-1.6778',
+    },
+    openingHours: 'Mo,Tu,We,Th 18:00-22:00',
+    priceRange: '180€/an',
+    sameAs: [
+      'https://www.facebook.com/quericomambo.fr',
+      'https://www.instagram.com/quericomambo_salsa',
+    ],
+    offers: {
+      '@type': 'Offer',
+      name: 'Cours de salsa à Rennes',
+      description: 'Cours de salsa cubaine et portoricaine pour tous niveaux à Rennes',
+    },
+    ...(rating && userRatingsTotal > 0 && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: rating.toFixed(1),
+        reviewCount: userRatingsTotal,
+        bestRating: '5',
+        worstRating: '1',
+      },
+    }),
+  };
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
+    );
+    document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  const faqItems = [
+    {
+      q: 'Je ne sais pas danser, puis-je venir au cours débutant ?',
+      a: "Bien sûr. Le cours débutant s'adresse aux personnes qui n'ont jamais dansé la salsa — aucune expérience préalable n'est nécessaire. On commence par la posture, le pas de base et les premières figures, à un rythme accessible.",
+    },
+    {
+      q: 'Faut-il venir accompagné ?',
+      a: "Non, tu peux venir seul ou accompagné. La rotation des partenaires est pratiquée dans nos cours — chacun progresse plus vite et fait connaissance avec d'autres danseurs.",
+    },
+    {
+      q: 'Quelle tenue prévoir ?',
+      a: 'Une tenue confortable dans laquelle tu te sens libre de bouger. Des chaussures à semelle lisse (pas de baskets sur le parquet) — sandales, escarpins ou chaussures de danse selon ton niveau.',
+    },
+    {
+      q: "Comment se passe le cours d'essai ?",
+      a: "Tu réserves en ligne, tu viens 10 minutes avant l'horaire pour te préparer, et tu suis le cours comme un élève régulier. C'est gratuit, sans engagement — un seul soir suffit pour savoir si l'école te convient.",
+    },
+    {
+      q: 'Quels sont les tarifs ?',
+      a: "Plusieurs formules à l'année selon le nombre de cours hebdomadaires choisis. Tarifs étudiants disponibles. Contacte-nous pour le détail ou consulte la page inscription.",
+    },
+    {
+      q: "Y a-t-il une limite d'âge ?",
+      a: "Aucune. Nos élèves vont de 18 à 70 ans. La salsa s'adapte à tous les corps et toutes les énergies — il n'est jamais trop tard pour commencer.",
+    },
+  ];
+
+  const testimonials = [
+    {
+      text: "Une ambiance incroyable, des profs hyper pédagogues. Je suis venue débutante, je danse maintenant en soirée chaque semaine.",
+      name: 'Marine L.',
+      role: 'Élève · 2e année',
+      initial: 'M',
+    },
+    {
+      text: 'Le bon dosage entre rigueur technique et plaisir. On progresse vraiment, et la communauté est très accueillante.',
+      name: 'Thomas D.',
+      role: 'Intermédiaire',
+      initial: 'T',
+    },
+    {
+      text: "Plus qu'une école, une famille. Les soirées sont devenues mon rendez-vous préféré du mois.",
+      name: 'Sophie M.',
+      role: 'Avancé',
+      initial: 'S',
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#121212]">
-      <Head>
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "DanceSchool",
-              "name": "Salsa Rennes - Qué Rico Mambo",
-              "description": "École de danse salsa à Rennes proposant des cours pour tous niveaux, des débutants aux danseurs confirmés",
-              "url": "https://www.salsarennes.fr",
-              "logo": "https://www.salsarennes.fr/images/logo.png",
-              "image": "https://www.salsarennes.fr/images/clem-eric.webp",
-              "telephone": "+33000000000",
-              "email": "contact@salsarennes.fr",
-              "address": {
-                "@type": "PostalAddress",
-                "addressLocality": "Rennes",
-                "addressRegion": "Bretagne",
-                "postalCode": "35000",
-                "addressCountry": "FR"
-              },
-              "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": "48.1173",
-                "longitude": "-1.6778"
-              },
-              "openingHours": "Mo,Tu,We,Th 18:00-22:00",
-              "priceRange": "180€/an",
-              "sameAs": [
-                "https://www.facebook.com/quericomambo.fr",
-                "https://www.instagram.com/quericomambo_salsa"
-              ],
-              "offers": {
-                "@type": "Offer",
-                "name": "Cours de salsa à Rennes",
-                "description": "Cours de salsa cubaine et portoricaine pour tous niveaux à Rennes"
-              }
-            }
-          `}
-        </script>
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "Je ne sais pas danser, est-ce que je peux venir au cours débutant ?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Bien sûr, ce cours de salsa à Rennes s'adresse aux personnes qui n'ont jamais dansé la salsa."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Est-ce que je dois venir accompagné ?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Non, tu peux venir seul ou accompagné."
-                  }
-                }
-              ]
-            }
-          `}
-        </script>
-      </Head>
+    <>
       <Seo
-        title="Salsa Rennes - École de danse cubaine et portoricaine à Rennes"
-        description="Apprenez la salsa à Rennes avec nos cours en ligne et en présentiel. École de danse cubaine et portoricaine proposant cours, événements, stages et soirées pour tous niveaux à Rennes. Rejoignez la communauté salsa de Rennes."
+        title="Salsa Rennes — Qué Rico Mambo · École de salsa cubaine et portoricaine"
+        description="Apprenez la salsa à Rennes avec Qué Rico Mambo. École de danse portoricaine et cubaine pour tous niveaux. Cours du lundi au jeudi, cours d'essai gratuit."
         url="https://www.salsarennes.fr"
         image="/images/logo.png"
-        keywords="salsa rennes, cours salsa rennes, école de danse rennes, salsa cubaine rennes, salsa portoricaine, apprendre salsa bretagne, soirées salsa rennes, professeurs salsa, danse latine rennes, cours débutant salsa, stage salsa bretagne, salsa on1 on2, bachata rennes, danser à rennes, meilleure école salsa, cours particuliers salsa, qué rico mambo, festival salsa rennes, initiation salsa, cours salsa débutant rennes, apprendre à danser rennes"
+        keywords="salsa rennes, cours salsa rennes, école de danse rennes, salsa cubaine rennes, salsa portoricaine, apprendre salsa bretagne, soirées salsa rennes, professeurs salsa, danse latine rennes, cours débutant salsa"
       />
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(danceSchoolSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: faqItems.map(({ q, a }) => ({
+                '@type': 'Question',
+                name: q,
+                acceptedAnswer: { '@type': 'Answer', text: a },
+              })),
+            }),
+          }}
+        />
+      </Head>
 
-      <Navbar isLoggedIn={isLoggedIn} />
+      {/* ═══ HEADER ═══ */}
+      <header className={`site-header${scrolled ? ' scrolled' : ''}`} id="top">
+        <div className="wrap nav">
+          <a href="#top" className="brand" aria-label="Qué Rico Mambo - Salsa Rennes">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo.png" alt="Qué Rico Mambo" className="brand-logo" />
+            <div className="brand-name">
+              <span className="a">Qué Rico Mambo</span>
+              <span className="b">Salsa · Rennes</span>
+            </div>
+          </a>
 
-      {/* ─── HERO ─────────────────────────────────────────────────── */}
-      <main>
-        <section className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-0 pb-10 md:pt-0 md:pb-16 overflow-hidden">
-          {/* Fond décoratif */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#f6bc7c]/5 blur-[120px]" />
-            <div className="absolute bottom-0 left-1/4 w-80 h-80 rounded-full bg-[#e8a254]/4 blur-[100px]" />
+          <nav aria-label="Navigation principale">
+            <ul className="nav-links">
+              <li><a href="#cours">Cours</a></li>
+              <li><a href="#niveaux">Niveaux</a></li>
+              <li><a href="#planning">Planning</a></li>
+              <li><a href="#evenements">Événements</a></li>
+              <li><a href="#temoignages">Avis</a></li>
+              <li><a href="#faq">FAQ</a></li>
+            </ul>
+          </nav>
+
+          <div className="nav-cta">
+            <a href="#contact" className="btn btn-ghost">Contact</a>
+            <Link href="/inscription" className="btn btn-primary">
+              Essai gratuit <span className="arr">→</span>
+            </Link>
           </div>
 
-          <div className="relative text-center max-w-3xl mx-auto">
-            {/* Logo + réseaux */}
-            <div className="mb-3 md:mb-8 w-[160px] sm:w-[200px] md:w-[340px] relative mx-auto">
-              <Image
-                src="/images/logo.png"
-                alt="Qué Rico Mambo Salsa"
-                width={340}
-                height={170}
-                className="w-full h-auto drop-shadow-2xl"
-                priority
-              />
-            </div>
+          <button
+            className={`nav-toggle${menuOpen ? ' open' : ''}`}
+            aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <span /><span /><span />
+          </button>
+        </div>
+      </header>
 
-            <div className="flex justify-center gap-4 mb-4 md:mb-8">
-              <a
-                href="https://www.facebook.com/quericomambo.fr"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/10 bg-white/5 text-[#f6bc7c] hover:bg-[#f6bc7c]/20 hover:border-[#f6bc7c]/40 transition-all duration-300 hover:scale-110"
-              >
-                <FaFacebook className="text-base md:text-lg" />
-              </a>
-              <a
-                href="https://www.instagram.com/quericomambo_salsa"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/10 bg-white/5 text-[#f6bc7c] hover:bg-[#f6bc7c]/20 hover:border-[#f6bc7c]/40 transition-all duration-300 hover:scale-110"
-              >
-                <FaInstagram className="text-base md:text-lg" />
-              </a>
-            </div>
+      {/* ═══ MENU MOBILE ═══ */}
+      <div className={`mobile-menu${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
+        <a href="#cours" onClick={() => setMenuOpen(false)}>Cours <span className="num">01</span></a>
+        <a href="#niveaux" onClick={() => setMenuOpen(false)}>Niveaux <span className="num">02</span></a>
+        <a href="#planning" onClick={() => setMenuOpen(false)}>Planning <span className="num">03</span></a>
+        <a href="#evenements" onClick={() => setMenuOpen(false)}>Événements <span className="num">04</span></a>
+        <a href="#temoignages" onClick={() => setMenuOpen(false)}>Témoignages <span className="num">05</span></a>
+        <a href="#faq" onClick={() => setMenuOpen(false)}>FAQ <span className="num">06</span></a>
+        <Link href="/inscription" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
+          Réserver l&apos;essai gratuit <span className="arr">→</span>
+        </Link>
+      </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 md:mb-5 leading-tight">
-              <span className="text-white">Apprenez la </span>
-              <span className="text-[#f6bc7c]">Salsa</span>
-              <br className="hidden sm:block" />
-              <span className="text-white"> à Rennes</span>
+      {/* ═══ HERO ═══ */}
+      <section className="hero">
+        <div className="glow" />
+        <div className="glow b" />
+        {mounted && (
+          <div className="hero-social" aria-label="Réseaux sociaux">
+            <a href="https://www.facebook.com/quericomambo.fr" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.1H8v3h2.4V21h3.1z" />
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/quericomambo_salsa" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="16" height="16">
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r=".75" fill="currentColor" stroke="none" />
+              </svg>
+            </a>
+            <a href="https://www.tiktok.com/@quericomambo" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.79a8.18 8.18 0 004.82 1.56V6.9a4.84 4.84 0 01-1.05-.21z" />
+              </svg>
+            </a>
+          </div>
+        )}
+        <div className="wrap hero-grid">
+          <div className="hero-copy" data-reveal>
+            <div className="eyebrow">Cours · Stages · Soirées · Rennes</div>
+            <h1 className="display">
+              Apprenez la <em>salsa</em> à Rennes avec des profs <em>passionnés.</em>
             </h1>
-            <p className="text-sm sm:text-base md:text-xl mb-6 md:mb-10 max-w-2xl mx-auto text-white/60 leading-relaxed">
-              Découvrez notre méthode unique d&apos;apprentissage, du niveau débutant à avancé,
-              avec des cours adaptés à tous les profils et tous les âges.
+            <p className="hero-sub">
+              École de salsa portoricaine — du débutant absolu au danseur confirmé.
+              Quatre soirs par semaine, dix ans à transmettre la passion.
             </p>
-
-            <div className="flex flex-col items-center gap-4">
-              <Link
-                href="/inscription"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#121212] px-10 py-4 rounded-full text-lg font-bold hover:shadow-2xl hover:shadow-[#f6bc7c]/25 transition-all duration-300 hover:-translate-y-1 hover:scale-105 group"
-              >
-                Commencer maintenant
-                <FaArrowRight className="text-sm group-hover:translate-x-1 transition-transform" />
+            <div className="hero-cta">
+              <Link href="/inscription" className="btn btn-primary">
+                Réserver un cours d&apos;essai <span className="arr">→</span>
               </Link>
-
-              <div className="flex flex-wrap justify-center gap-3 mt-2">
-                {[
-                  { href: '/niveaux/debutant', label: 'Débutant' },
-                  { href: '/niveaux/intermediaire', label: 'Intermédiaire' },
-                  { href: '/niveaux/avance', label: 'Avancé' },
-                ].map(({ href, label }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="text-[#f6bc7c] text-sm font-medium px-5 py-2 rounded-full border border-[#f6bc7c]/30 bg-[#f6bc7c]/5 hover:bg-[#f6bc7c]/15 hover:border-[#f6bc7c]/60 transition-all duration-300 hover:scale-105"
-                  >
-                    {label}
-                  </Link>
-                ))}
+              <a href="#cours" className="btn btn-ghost">Découvrir nos cours</a>
+            </div>
+            {mounted && (
+              <div className="hero-social-mobile">
+                <a href="https://www.facebook.com/quericomambo.fr" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                    <path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.1H8v3h2.4V21h3.1z" />
+                  </svg>
+                </a>
+                <a href="https://www.instagram.com/quericomambo_salsa" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="16" height="16">
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r=".75" fill="currentColor" stroke="none" />
+                  </svg>
+                </a>
+                <a href="https://www.tiktok.com/@ericsoret" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.79a8.18 8.18 0 004.82 1.56V6.9a4.84 4.84 0 01-1.05-.21z" />
+                  </svg>
+                </a>
+              </div>
+            )}
+            <div className="hero-meta">
+              <div className="stat">
+                <div className="v">10<span style={{ fontSize: '0.6em' }}>ans</span></div>
+                <div className="l">à Rennes</div>
+              </div>
+              <div className="stat">
+                <div className="v">3</div>
+                <div className="l">niveaux</div>
+              </div>
+              <div className="stat">
+                <div className="v">04</div>
+                <div className="l">soirs / semaine</div>
+              </div>
+              <div className="stat">
+                <div className="v">★★★★★</div>
+                <div className="l">avis élèves</div>
               </div>
             </div>
           </div>
-        </section>
 
-        {/* ─── POURQUOI NOUS CHOISIR ─────────────────────────────── */}
-        <section className="py-20 px-4 bg-[#161616]">
-          <div className="max-w-5xl mx-auto text-center">
-            <p className="text-[#f6bc7c] text-sm font-semibold uppercase tracking-widest mb-3">Nos atouts</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">Pourquoi nous choisir ?</h2>
+          <figure className="hero-photo" data-reveal>
+            <span className="badge">
+              <span className="dot" />
+              Inscriptions ouvertes
+            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/clem-eric.webp" alt="Vos professeurs — Qué Rico Mambo" />
+            <figcaption className="cap">
+              <span className="who">
+                Vos professeurs
+                <small>Équipe — QRM</small>
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {[
-                {
-                  icon: <FaGraduationCap className="text-[#f6bc7c] text-3xl" />,
-                  title: 'Cours Adaptés',
-                  desc: 'Des leçons personnalisées pour tous les niveaux, du débutant absolu au danseur confirmé.',
-                },
-                {
-                  icon: <FaUserTie className="text-[#f6bc7c] text-3xl" />,
-                  title: 'Professeurs Experts',
-                  desc: `Une équipe passionnée avec plus de 10 ans d'expérience dans l'enseignement.`,
-                },
-                {
-                  icon: <FaClock className="text-[#f6bc7c] text-3xl" />,
-                  title: 'Flexibilité',
-                  desc: 'Apprenez à votre rythme avec des créneaux variés en semaine et le week-end.',
-                },
-              ].map(({ icon, title, desc }) => (
-                <div
-                  key={title}
-                  className="group bg-[#1e1e1e] border border-white/7 rounded-2xl p-7 text-left hover:border-[#f6bc7c]/25 hover:bg-[#222] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
-                >
-                  <div className="mb-4 w-12 h-12 rounded-xl bg-[#f6bc7c]/10 flex items-center justify-center group-hover:bg-[#f6bc7c]/20 transition-colors">
-                    {icon}
+      {/* ═══ MARQUEE ═══ */}
+      <div className="marquee-wrap" aria-hidden="true">
+        <div className="marquee">
+          <span>Salsa on 2</span>
+          <span>Salsa portoricaine</span>
+          <span>Mambo · On2</span>
+          <span>Pachanga</span>
+          <span>Cha-cha-cha</span>
+          <span>Stages internationaux</span>
+          <span>Soirées dansantes</span>
+          <span>Practica libre</span>
+          <span>Salsa on 2</span>
+          <span>Salsa portoricaine</span>
+          <span>Mambo · On2</span>
+          <span>Pachanga</span>
+          <span>Cha-cha-cha</span>
+          <span>Stages internationaux</span>
+          <span>Soirées dansantes</span>
+          <span>Practica libre</span>
+        </div>
+      </div>
+
+      {/* ═══ ATOUTS ═══ */}
+      <section className="s" id="cours">
+        <div className="wrap">
+          <div className="s-head" data-reveal>
+            <div>
+              <span className="eyebrow">01 — Pourquoi nous choisir</span>
+              <h2 className="display">Une école qui transmet, pas qui sélectionne.</h2>
+            </div>
+            <p className="s-aside">
+              Dix ans à faire danser Rennes — étudiants, pros, retraités. Une méthode claire,
+              des profs présents, une communauté qui accueille. Le reste, c&apos;est de la salsa.
+            </p>
+          </div>
+
+          <div className="atouts" data-reveal>
+            <div className="atout">
+              <span className="num">01</span>
+              <h3>Cours <em>tous niveaux</em></h3>
+              <p>Du premier pas au shine maîtrisé — chaque danseur trouve sa place sur la piste. Aucune expérience requise pour commencer.</p>
+            </div>
+            <div className="atout">
+              <span className="num">02</span>
+              <h3>Profs <em>certifiés</em></h3>
+              <p>Une équipe formée à Cuba, Paris et New York. Plus de 10 ans d&apos;expérience à transmettre sans détour, avec rigueur et chaleur.</p>
+            </div>
+            <div className="atout">
+              <span className="num">03</span>
+              <h3>Ambiance <em>conviviale</em></h3>
+              <p>On vient seul, on repart avec une famille. Rotation des partenaires, bienveillance à tous niveaux — la piste est un terrain de rencontre.</p>
+            </div>
+            <div className="atout">
+              <span className="num">04</span>
+              <h3>Événements <em>réguliers</em></h3>
+              <p>Practica mensuelle, stages avec danseurs internationaux, festivals comme Breizh Loves Mambo. La salsa hors les murs.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ NIVEAUX ═══ */}
+      <section
+        className="s"
+        id="niveaux"
+        style={{ borderTop: '1px solid var(--line)', background: 'var(--bg-soft)' }}
+      >
+        <div className="wrap">
+          <div className="s-head" data-reveal>
+            <div>
+              <span className="eyebrow">02 — Les niveaux</span>
+              <h2 className="display">Trois niveaux, une <em>trajectoire</em>.</h2>
+            </div>
+            <p className="s-aside">
+              Une progression claire et balisée. On commence où l&apos;on est, on avance à son rythme
+              — et on franchit les paliers quand on est prêt, jamais avant.
+            </p>
+          </div>
+
+          <div className="levels" data-reveal>
+            <div className="lvl">
+              <span className="stage">Niveau · 01</span>
+              <div className="name"><em>Débutant</em></div>
+              <p>Pas de base, posture, premier pas guidés. Aucune expérience requise — simplement venir avec l&apos;envie d&apos;apprendre.</p>
+              <div className="meter">
+                <span className="on" /><span /><span /><span />
+              </div>
+              <a href="https://www.quericomambo.fr/cours-salsa-debutant-rennes" className="lvl-link" target="_blank" rel="noopener noreferrer">Commencer ici →</a>
+            </div>
+            <div className="lvl">
+              <span className="stage">Niveau · 02</span>
+              <div className="name"><em>Intermédiaire</em></div>
+              <p>Combinaisons, musicalité, vocabulaire enrichi. On commence à improviser à deux et à habiter le rythme.</p>
+              <div className="meter">
+                <span className="on" /><span className="on" /><span /><span />
+              </div>
+              <a href="https://www.quericomambo.fr/cours-intermediaire-de-salsa" className="lvl-link" target="_blank" rel="noopener noreferrer">Niveau intermédiaire →</a>
+            </div>
+            <div className="lvl">
+              <span className="stage">Niveau · 03</span>
+              <div className="name"><em>Avancé</em></div>
+              <p>Travail technique, performance, expression personnelle. La piste devient scène, l&apos;élève devient danseur.</p>
+              <div className="meter">
+                <span className="on" /><span className="on" /><span className="on" /><span className="on" />
+              </div>
+              <a href="https://www.quericomambo.fr/cours-inter-2" className="lvl-link" target="_blank" rel="noopener noreferrer">Niveau avancé →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ PLANNING ═══ */}
+      <section className="planning-wrap" id="planning">
+        <div
+          className="wrap"
+          style={{
+            paddingTop: 'clamp(70px, 10vw, 140px)',
+            paddingBottom: 'clamp(70px, 10vw, 140px)',
+            paddingLeft: 0,
+            paddingRight: 0,
+          }}
+        >
+          <div style={{ padding: '0 var(--gutter)' }}>
+            <div className="s-head" data-reveal>
+              <div>
+                <span className="eyebrow">03 — Planning hebdo</span>
+                <h2 className="display">Quatre soirs, <em>une école qui vit</em>.</h2>
+              </div>
+              <p className="s-aside">
+                Cours du lundi au jeudi, créneaux du soir 19h — 22h. Practica libre une fois par mois
+                le vendredi. Tous les détails par jour ci-dessous.
+              </p>
+            </div>
+          </div>
+
+          <div className="planning" data-reveal>
+            <div className="day-card">
+              <div className="d">Lun.</div>
+              <div className="full">Lundi</div>
+              <ul>
+                <li><b>20h15</b><br />Débutant</li>
+                <li><b>21h15</b><br />Intermédiaire</li>
+              </ul>
+            </div>
+            <div className="day-card">
+              <div className="d">Mar.</div>
+              <div className="full">Mardi</div>
+              <ul>
+                <li><b>20h15</b><br />Intermédiaire 2</li>
+              </ul>
+            </div>
+            <div className="day-card">
+              <div className="d">Mer.</div>
+              <div className="full">Mercredi</div>
+              <ul>
+                <li><b>20h00</b><br />Débutant</li>
+                <li><b>21h00</b><br />Intermédiaire</li>
+              </ul>
+            </div>
+            <div className="day-card">
+              <div className="d">Jeu.</div>
+              <div className="full">Jeudi</div>
+              <ul>
+                <li><b>20h15</b><br />Footwork · Solo</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '48px', padding: '0 var(--gutter)' }} data-reveal>
+            <Link href="/inscription" className="btn btn-primary">
+              Réserver un cours d&apos;essai <span className="arr">→</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ NOTRE ÉCOLE ═══ */}
+      <section className="s" id="ecole">
+        <div className="wrap">
+          <div className="about-grid">
+            <div className="about-photo" data-reveal>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/clem-eric.webp" alt="Clem & Eric — professeurs Qué Rico Mambo" />
+            </div>
+            <div data-reveal>
+              <span className="eyebrow">04 — Notre école</span>
+              <h2
+                className="display"
+                style={{ fontSize: 'var(--t-h2)', marginTop: '18px', maxWidth: '18ch' }}
+              >
+                Dix ans à Rennes, une <em>référence</em> pour la salsa.
+              </h2>
+              <p className="lead" style={{ marginTop: '24px' }}>
+                Qué Rico Mambo est devenue une référence rennaise pour apprendre la salsa portoricaine.
+              </p>
+              <p style={{ marginTop: '18px', color: 'var(--ink-soft)', maxWidth: '50ch' }}>
+                Une méthode unique d&apos;apprentissage, du débutant absolu au danseur confirmé —
+                adaptée à tous les profils et tous les âges, dans plusieurs salles accessibles en
+                transport en commun.
+              </p>
+
+              <div className="about-cards">
+                <div className="about-card">
+                  <div className="ic">⚲</div>
+                  <div>
+                    <div className="t">Studio centre — Rennes</div>
+                    <div className="d">Parquet bois, vestiaires. Métro Sainte-Anne, parkings à proximité.</div>
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-                  <p className="text-white/55 text-sm leading-relaxed">{desc}</p>
+                </div>
+                <div className="about-card">
+                  <div className="ic">⌖</div>
+                  <div>
+                    <div className="t">Plusieurs salles dans la ville</div>
+                    <div className="d">Accessibles en transport en commun, équipées pour une expérience optimale.</div>
+                  </div>
+                </div>
+                <div className="about-card">
+                  <div className="ic">♪</div>
+                  <div>
+                    <div className="t">Salsa cubaine &amp; portoricaine</div>
+                    <div className="d">Bachata, cha-cha-cha, rueda, musicalité — un vocabulaire complet.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ ÉVÉNEMENTS ═══ */}
+      <section className="events-wrap s" id="evenements">
+        <div className="wrap">
+          <div className="s-head" data-reveal>
+            <div>
+              <span className="eyebrow">05 — La scène salsa</span>
+              <h2 className="display">Bien plus que des <em>cours</em>.</h2>
+            </div>
+            <p className="s-aside">
+              La salsa, c&apos;est aussi des soirées, des stages internationaux et un festival qui fait
+              vibrer la Bretagne. Voilà ce qui vous attend cette saison.
+            </p>
+          </div>
+
+          <div className="events" data-reveal>
+            <div className="event featured">
+              <div>
+                <span className="e-tag">Festival · Rennes</span>
+                <h3>Breizh Loves <em>Mambo</em></h3>
+                <p>Trois jours de stages avec des danseurs internationaux, soirées dansantes et performances. L&apos;événement salsa de l&apos;ouest.</p>
+              </div>
+              <div className="e-meta">
+                <span className="date">Avril 2027</span>
+                <span className="where">Rennes · 3 jours</span>
+              </div>
+            </div>
+            <div className="event">
+              <div>
+                <span className="e-tag">Mensuel</span>
+                <h3>Soirée <em>Salsa</em></h3>
+                <p>Une soirée par mois, ouverte à tous les niveaux. Practica encadrée puis piste libre jusqu&apos;à minuit.</p>
+              </div>
+              <div className="e-meta">
+                <span className="date">1er sam.</span>
+                <span className="where">Studio · 21h</span>
+              </div>
+            </div>
+            <div className="event">
+              <div>
+                <span className="e-tag">Stage invité</span>
+                <h3>Workshops <em>internationaux</em></h3>
+                <p>Plusieurs fois dans l&apos;année, des invités venus de Cuba, NYC et Paris pour des week-ends intensifs.</p>
+              </div>
+              <div className="e-meta">
+                <span className="date">Saison</span>
+                <span className="where">Sur inscription</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '48px' }} data-reveal>
+            <a href="#contact" className="btn-link">Voir l&apos;agenda complet →</a>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ TÉMOIGNAGES ═══ */}
+      <section className="s" id="temoignages" style={{ borderTop: '1px solid var(--line)' }}>
+        <div className="wrap">
+          <div className="s-head" data-reveal>
+            <div>
+              <span className="eyebrow">06 — Témoignages</span>
+              <h2 className="display">Ce qu&apos;en pensent <em>nos élèves</em>.</h2>
+            </div>
+            <p className="s-aside">
+              Des avis authentiques de danseurs qui ont commencé chez nous — débutants,
+              intermédiaires et avancés.
+            </p>
+          </div>
+
+          {reviews && reviews.length > 0 ? (
+            <GoogleReviews reviews={reviews} />
+          ) : (
+            <div className="testimonials" data-reveal>
+              {testimonials.map(({ text, name, role, initial }) => (
+                <div className="testimonial" key={name}>
+                  <p>{text}</p>
+                  <div className="by">
+                    <div className="av">{initial}</div>
+                    <div className="id">
+                      <div className="n">{name}</div>
+                      <div className="r">{role}</div>
+                    </div>
+                    <span className="stars">★★★★★</span>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        </section>
+          )}
+        </div>
+      </section>
 
-        {/* ─── NOTRE ÉCOLE ───────────────────────────────────────── */}
-        <section className="py-20 px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <p className="text-[#f6bc7c] text-sm font-semibold uppercase tracking-widest mb-3">À propos</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Notre École de Salsa à Rennes</h2>
-              <p className="text-white/55 max-w-2xl mx-auto leading-relaxed">
-                Depuis plus de 10 ans, notre école Qué Rico Mambo est devenue une référence pour apprendre la salsa à Rennes.
-                Nous proposons des cours de salsa cubaine et portoricaine pour tous les niveaux.
-              </p>
+      {/* ═══ FAQ ═══ */}
+      <section
+        className="s"
+        id="faq"
+        style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--line)' }}
+      >
+        <div className="wrap" style={{ maxWidth: '920px' }}>
+          <div
+            className="s-head"
+            data-reveal
+            style={{ flexDirection: 'column', alignItems: 'flex-start' }}
+          >
+            <div>
+              <span className="eyebrow">07 — Questions fréquentes</span>
+              <h2 className="display">Tout ce qu&apos;il faut <em>savoir</em>.</h2>
             </div>
+          </div>
 
-            <div className="grid md:grid-cols-2 gap-10 items-center">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
-                <Image
-                  src="/images/clem-eric.webp"
-                  alt="Professeurs de salsa à Rennes"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                <p className="absolute bottom-4 left-4 right-4 text-white text-sm font-medium text-center">
-                  L'équipe de professeurs de Salsa Rennes
-                </p>
+          <div className="faq-list" data-reveal>
+            {faqItems.map(({ q, a }, i) => (
+              <div className={`faq-item${openFaq === i ? ' open' : ''}`} key={i}>
+                <button
+                  className="faq-q"
+                  aria-expanded={openFaq === i}
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                >
+                  <span>{q}</span>
+                  <span className="ic">+</span>
+                </button>
+                <div className="faq-a">
+                  <p>{a}</p>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-              <div className="space-y-6">
-                <p className="text-white/65 leading-relaxed">
-                  Notre équipe de professeurs passionnés vous accompagne dans votre apprentissage avec une pédagogie adaptée
-                  et une ambiance conviviale qui fait notre réputation.
-                </p>
+      {/* ═══ CTA FINAL ═══ */}
+      <section className="cta-final" id="essai">
+        <div className="glow" />
+        <div className="wrap cta-final-inner" data-reveal>
+          <span className="eyebrow">Cours d&apos;essai gratuit</span>
+          <h2 className="display">Un seul soir suffit pour <em>savoir</em>.</h2>
+          <p className="lead">
+            Inscription en ligne, places limitées chaque semaine. Venez en tenue confortable
+            — le reste, on s&apos;en occupe.
+          </p>
+          <div className="row">
+            <Link href="/inscription" className="btn btn-primary">
+              Je réserve mon essai <span className="arr">→</span>
+            </Link>
+            <a href="#contact" className="btn btn-ghost">Nous contacter</a>
+          </div>
+          <div className="micro">Gratuit · Sans engagement · Réponse en 24h</div>
+        </div>
+      </section>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer className="site-footer" id="contact">
+        <div className="wrap">
+          <div className="foot-grid">
+            <div className="foot-brand">
+              <a href="#top" className="brand">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/logo.png" alt="Qué Rico Mambo" className="brand-logo" />
+                <div className="brand-name">
+                  <span className="a">Qué Rico Mambo</span>
+                  <span className="b">Salsa · Rennes</span>
+                </div>
+              </a>
+              <p>
+                École de salsa cubaine et portoricaine à Rennes depuis 10 ans. Cours pour tous
+                niveaux, soirées et événements toute l&apos;année.
+              </p>
+              <div className="socials" aria-label="Réseaux sociaux">
                 <a
-                  href="https://www.quericomambo.fr"
+                  href="https://www.facebook.com/quericomambo.fr"
+                  aria-label="Facebook"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-[#1e1e1e] border border-[#f6bc7c]/30 text-[#f6bc7c] px-7 py-3.5 rounded-full font-semibold hover:bg-[#f6bc7c]/10 hover:border-[#f6bc7c]/60 transition-all duration-300 group"
                 >
-                  Découvrir Qué Rico Mambo
-                  <FaArrowRight className="text-sm group-hover:translate-x-1 transition-transform" />
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.1H8v3h2.4V21h3.1z" />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.instagram.com/quericomambo_salsa"
+                  aria-label="Instagram"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r=".75" fill="currentColor" />
+                  </svg>
+                </a>
+                <a href="mailto:contact@quericomambo.fr" aria-label="Email">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3 7l9 6 9-6" />
+                  </svg>
                 </a>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* ─── COMMUNAUTÉ ────────────────────────────────────────── */}
-        <section className="py-20 px-4 bg-[#161616]">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <p className="text-[#f6bc7c] text-sm font-semibold uppercase tracking-widest mb-3">La scène salsa</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                La Salsa à Rennes : Une Communauté Dynamique
-              </h2>
+            <div className="foot-col">
+              <h4>Cours</h4>
+              <ul>
+                <li><a href="#niveaux">Débutant</a></li>
+                <li><a href="#niveaux">Intermédiaire</a></li>
+                <li><a href="#niveaux">Avancé</a></li>
+                <li><a href="#planning">Planning</a></li>
+                <li><Link href="/inscription">Cours d&apos;essai</Link></li>
+              </ul>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {[
-                {
-                  icon: <FaMapMarkerAlt className="text-[#f6bc7c] text-xl" />,
-                  title: 'Cours de Salsa à Rennes',
-                  desc: 'Nos cours se déroulent dans plusieurs salles à travers la ville, accessibles en transport en commun et équipées pour une expérience optimale.',
-                },
-                {
-                  icon: <FaCalendarAlt className="text-[#f6bc7c] text-xl" />,
-                  title: 'Événements Salsa à Rennes',
-                  desc: `Tout au long de l'année : soirées salsa, stages avec des danseurs internationaux et événements festifs. Rejoignez la scène rennaise !`,
-                },
-                {
-                  icon: <FaUsers className="text-[#f6bc7c] text-xl" />,
-                  title: 'La Communauté Salsa',
-                  desc: 'Étudiants, professionnels, retraités… tous unis par la passion. Intégrez facilement notre communauté et développez votre réseau.',
-                },
-                {
-                  icon: <FaGraduationCap className="text-[#f6bc7c] text-xl" />,
-                  title: 'Apprendre la Salsa',
-                  desc: 'Cours structurés, progressifs et adaptés à chaque niveau. Débutant ou expérimenté, vous trouverez le cours qui vous correspond.',
-                },
-              ].map(({ icon, title, desc }) => (
-                <div key={title} className="flex gap-4 bg-[#1e1e1e] border border-white/7 rounded-2xl p-6 hover:border-[#f6bc7c]/20 transition-all duration-300">
-                  <div className="flex-shrink-0 mt-1 w-9 h-9 rounded-lg bg-[#f6bc7c]/10 flex items-center justify-center">
-                    {icon}
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold mb-1.5">{title}</h3>
-                    <p className="text-white/55 text-sm leading-relaxed">{desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── FAQ ───────────────────────────────────────────────── */}
-        <section className="py-20 px-4">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12">
-              <p className="text-[#f6bc7c] text-sm font-semibold uppercase tracking-widest mb-3">FAQ</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-white">
-                Questions fréquentes sur nos cours
-              </h2>
+            <div className="foot-col">
+              <h4>L&apos;école</h4>
+              <ul>
+                <li><a href="#ecole">Notre histoire</a></li>
+                <li><a href="#ecole">Les profs</a></li>
+                <li><a href="#evenements">Événements</a></li>
+                <li><a href="#evenements">Breizh Loves Mambo</a></li>
+                <li><a href="#temoignages">Avis</a></li>
+              </ul>
             </div>
 
-            <div className="space-y-4">
-              {[
-                {
-                  q: 'Je ne sais pas danser, est-ce que je peux venir au cours débutant ?',
-                  a: `Bien sûr, ce cours de salsa à Rennes s'adresse aux personnes qui n'ont jamais dansé la salsa. Aucune expérience préalable n'est nécessaire.`,
-                },
-                {
-                  q: 'Est-ce que je dois venir accompagné ?',
-                  a: `Non, tu peux venir seul ou accompagné. La rotation des partenaires est pratiquée dans nos cours, ce qui permet à chacun de s'améliorer et de rencontrer d'autres danseurs.`,
-                },
-              ].map(({ q, a }) => (
-                <div key={q} className="bg-[#1e1e1e] border border-white/7 rounded-2xl p-6 border-l-2 border-l-[#f6bc7c]/60 hover:border-l-[#f6bc7c] transition-all duration-300">
-                  <h3 className="text-white font-semibold mb-2">{q}</h3>
-                  <p className="text-white/55 text-sm leading-relaxed">{a}</p>
-                </div>
-              ))}
+            <div className="foot-col">
+              <h4>Contact</h4>
+              <ul>
+                <li>
+                  <a href="mailto:contact@quericomambo.fr">contact@quericomambo.fr</a>
+                </li>
+                <li>
+                  <a href="tel:+33761461982">+33 7 61 46 19 82</a>
+                </li>
+                <li>
+                  <a href="#ecole">Studio · Rennes centre</a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.facebook.com/quericomambo.fr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Facebook
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.instagram.com/quericomambo_salsa"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Instagram
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
-        </section>
 
-        {/* ─── AVIS ──────────────────────────────────────────────── */}
-        <section className="py-20 px-4 bg-[#161616]">
-          <div className="max-w-5xl mx-auto text-center">
-            <p className="text-[#f6bc7c] text-sm font-semibold uppercase tracking-widest mb-3">Témoignages</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ce que nos élèves pensent
-            </h2>
-            <p className="text-white/55 mb-10 max-w-2xl mx-auto">
-              Découvrez les avis de nos élèves de salsa à Rennes.
-            </p>
-            <GoogleReviews />
+          <div className="foot-bottom">
+            <span>© 2026 Qué Rico Mambo · Salsa Rennes</span>
+            <div className="legal">
+              <Link href="/politique-de-confidentialite">Politique de confidentialité</Link>
+              <a href="#top">Mentions légales</a>
+            </div>
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </footer>
+    </>
   );
+}
+
+export async function getStaticProps() {
+  const { reviews, rating, userRatingsTotal } = await getGoogleReviews();
+  return {
+    props: { reviews, rating, userRatingsTotal },
+    revalidate: 3600,
+  };
 }

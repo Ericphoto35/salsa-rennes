@@ -18,7 +18,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Poppins', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-poppins)', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.7s ease-out forwards',

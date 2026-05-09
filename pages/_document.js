@@ -5,15 +5,13 @@ export default function Document() {
     <Html lang="fr">
       <Head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Favicon standard dans la racine avec paramètre de version pour forcer l'actualisation */}
         <link rel="icon" href="/favicon.ico?v=2" />
-        {/* Favicon PNG */}
         <link rel="icon" type="image/png" href="/images/logonoir.png?v=2" />
-        {/* Pour les appareils Apple */}
         <link rel="apple-touch-icon" href="/images/logonoir.png?v=2" />
-        {/* Pour la compatibilité avec les anciens navigateurs */}
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,400;1,6..96,500&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </Head>
       <body>
         <Main />

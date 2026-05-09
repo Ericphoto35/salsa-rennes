@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Seo from '../../components/Seo';
 import Navbar from '../../components/Navbar';
 import ProtectedRoute from '../../components/ProtectedRoute';
 
@@ -11,11 +11,12 @@ export default function Avance() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-[#2b2b2b]">
-        <Head>
-          <title>Niveau Avancé - Salsa Rennes</title>
-          <meta name="description" content="Cours de salsa niveau avancé à Rennes" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </Head>
+        <Seo
+          title="Niveau Avancé - Salsa Rennes"
+          description="Cours de salsa niveau avancé à Rennes"
+          url="https://www.salsarennes.fr/niveaux/avance"
+          noIndex={true}
+        />
 
         <Navbar />
 

@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Seo from '../../components/Seo';
 import Navbar from '../../components/Navbar';
 import ProtectedRoute from '../../components/ProtectedRoute';
 
@@ -12,11 +12,12 @@ export default function Intermediaire() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-[#2b2b2b]">
-        <Head>
-          <title>Niveau Intermédiaire - Salsa Rennes</title>
-          <meta name="description" content="Cours de salsa niveau intermédiaire à Rennes" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </Head>
+        <Seo
+          title="Niveau Intermédiaire - Salsa Rennes"
+          description="Cours de salsa niveau intermédiaire à Rennes"
+          url="https://www.salsarennes.fr/niveaux/intermediaire"
+          noIndex={true}
+        />
 
         <Navbar />
 

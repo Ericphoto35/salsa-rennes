@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Seo from '../components/Seo';
+import BreadcrumbSchema from '../components/BreadcrumbSchema';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
@@ -53,6 +54,10 @@ export default function Inscription() {
 
   return (
     <div className="min-h-screen bg-[#121212]">
+      <BreadcrumbSchema items={[
+        { name: 'Accueil', url: 'https://www.salsarennes.fr' },
+        { name: 'Inscription', url: 'https://www.salsarennes.fr/inscription' },
+      ]} />
       <Seo
         title="Inscription - Salsa Rennes"
         description="Inscrivez-vous aux cours de salsa à Rennes. Rejoignez la communauté Salsa Rennes et découvrez nos cours, stages et soirées."
