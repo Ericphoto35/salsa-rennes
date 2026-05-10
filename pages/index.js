@@ -2,13 +2,9 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
 import Seo from '../components/Seo';
-import { getGoogleReviews } from '../lib/getGoogleReviews';
 
-const GoogleReviews = dynamic(() => import('../components/GoogleReviews'), { ssr: false });
-
-export default function Home({ reviews, rating, userRatingsTotal }) {
+export default function Home({ rating, userRatingsTotal }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
@@ -609,10 +605,7 @@ export default function Home({ reviews, rating, userRatingsTotal }) {
             </p>
           </div>
 
-          {reviews && reviews.length > 0 ? (
-            <GoogleReviews reviews={reviews} />
-          ) : (
-            <div className="testimonials" data-reveal>
+          <div className="testimonials" data-reveal>
               {testimonials.map(({ text, name, role, initial }) => (
                 <div className="testimonial" key={name}>
                   <p>{text}</p>
@@ -627,7 +620,6 @@ export default function Home({ reviews, rating, userRatingsTotal }) {
                 </div>
               ))}
             </div>
-          )}
         </div>
       </section>
 
@@ -807,9 +799,7 @@ export default function Home({ reviews, rating, userRatingsTotal }) {
 }
 
 export async function getStaticProps() {
-  const { reviews, rating, userRatingsTotal } = await getGoogleReviews();
   return {
-    props: { reviews, rating, userRatingsTotal },
-    revalidate: 3600,
+    props: {},
   };
 }
