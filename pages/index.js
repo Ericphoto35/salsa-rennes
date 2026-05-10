@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import Seo from '../components/Seo';
 import { getGoogleReviews } from '../lib/getGoogleReviews';
@@ -163,8 +164,7 @@ export default function Home({ reviews, rating, userRatingsTotal }) {
       <header className={`site-header${scrolled ? ' scrolled' : ''}`} id="top">
         <div className="wrap nav">
           <a href="#top" className="brand" aria-label="Qué Rico Mambo - Salsa Rennes">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/logo.png" alt="Qué Rico Mambo" className="brand-logo" />
+            <Image src="/images/logo.png" alt="Qué Rico Mambo" width={120} height={60} className="brand-logo" priority />
             <div className="brand-name">
               <span className="a">Qué Rico Mambo</span>
               <span className="b">Salsa · Rennes</span>
@@ -300,8 +300,7 @@ export default function Home({ reviews, rating, userRatingsTotal }) {
               <span className="dot" />
               Inscriptions ouvertes
             </span>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/clem-eric.webp" alt="Vos professeurs — Qué Rico Mambo" />
+            <Image src="/images/clem-eric.webp" alt="Vos professeurs — Qué Rico Mambo" width={600} height={800} priority style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <figcaption className="cap">
               <span className="who">
                 Vos professeurs
@@ -493,8 +492,7 @@ export default function Home({ reviews, rating, userRatingsTotal }) {
         <div className="wrap">
           <div className="about-grid">
             <div className="about-photo" data-reveal>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/clem-eric.webp" alt="Clem & Eric — professeurs Qué Rico Mambo" />
+              <Image src="/images/clem-eric.webp" alt="Clem & Eric — professeurs Qué Rico Mambo" width={600} height={800} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div data-reveal>
               <span className="eyebrow">04 — Notre école</span>
@@ -697,8 +695,7 @@ export default function Home({ reviews, rating, userRatingsTotal }) {
           <div className="foot-grid">
             <div className="foot-brand">
               <a href="#top" className="brand">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/logo.png" alt="Qué Rico Mambo" className="brand-logo" />
+                <Image src="/images/logo.png" alt="Qué Rico Mambo" width={120} height={60} className="brand-logo" />
                 <div className="brand-name">
                   <span className="a">Qué Rico Mambo</span>
                   <span className="b">Salsa · Rennes</span>

@@ -50,7 +50,7 @@ html {
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Manrope', var(--font-poppins), system-ui, sans-serif;
+  font-family: var(--font-manrope), var(--font-poppins), system-ui, sans-serif;
   font-size: var(--t-body);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -80,7 +80,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
 
 /* ===== TYPE PRIMITIVES ===== */
 .display {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-weight: 500;
   line-height: 1.02;
   letter-spacing: -0.01em;
@@ -91,7 +91,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: var(--t-mono);
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -106,7 +106,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
 }
 
 .lead {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-weight: 400;
   font-size: var(--t-lead);
@@ -115,7 +115,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
 }
 
 .mono {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: var(--t-mono);
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -131,7 +131,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   gap: 10px;
   padding: 16px 28px;
   border-radius: 999px;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 700;
   font-size: 14px;
   letter-spacing: 0.06em;
@@ -139,7 +139,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
   will-change: transform;
 }
-.btn .arr { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0; }
+.btn .arr { font-family: var(--font-jetbrains), monospace; font-size: 13px; letter-spacing: 0; }
 
 .btn-primary {
   background: linear-gradient(180deg, oklch(0.84 0.10 82), oklch(0.66 0.12 75));
@@ -166,7 +166,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: var(--t-mono);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -224,13 +224,13 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   line-height: 1;
 }
 .brand-name .a {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: 16px;
   color: var(--ink);
 }
 .brand-name .b {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 9px;
   letter-spacing: 0.22em;
   color: var(--gold);
@@ -316,7 +316,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   pointer-events: auto;
 }
 .mobile-menu a {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: 32px;
   color: var(--ink);
@@ -327,7 +327,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   justify-content: space-between;
 }
 .mobile-menu a .num {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 11px;
   letter-spacing: 0.22em;
   color: var(--gold);
@@ -388,14 +388,14 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   border-top: 1px solid var(--line);
 }
 .hero-meta .stat .v {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: 32px;
   color: var(--gold);
   line-height: 1;
 }
 .hero-meta .stat .l {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -435,7 +435,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   background: rgba(10,9,7,0.6);
   border: 1px solid var(--gold);
   border-radius: 999px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -464,7 +464,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   gap: 16px;
 }
 .hero-photo .cap .who {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   color: var(--ink);
   font-size: 18px;
@@ -473,7 +473,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
 .hero-photo .cap .who small {
   display: block;
   font-style: normal;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 9px;
   letter-spacing: 0.22em;
   color: var(--gold);
@@ -496,7 +496,7 @@ button { font: inherit; cursor: pointer; border: 0; background: none; color: inh
   white-space: nowrap;
 }
 .marquee span {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: 22px;
   color: var(--ink-soft);
@@ -564,13 +564,13 @@ section.s {
 }
 .atout:hover { background: rgba(255,255,255,0.02); }
 .atout .num {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 11px;
   letter-spacing: 0.22em;
   color: var(--gold);
 }
 .atout h3 {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-weight: 500;
   font-size: var(--t-h3);
   margin-top: 14px;
@@ -599,13 +599,13 @@ section.s {
 .lvl:last-child { border-right: none; }
 .lvl:hover { background: rgba(255,255,255,0.015); }
 .lvl .stage {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 11px;
   letter-spacing: 0.22em;
   color: var(--ink-mute);
 }
 .lvl .name {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-weight: 500;
   font-size: clamp(28px, 3.4vw, 44px);
   margin-top: 12px;
@@ -626,7 +626,7 @@ section.s {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -668,14 +668,14 @@ section.s {
   border-top: 6px solid var(--gold);
 }
 .day-card .d {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: clamp(36px, 4vw, 56px);
   color: var(--ink);
   line-height: 1;
 }
 .day-card .full {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 11px;
   letter-spacing: 0.22em;
   color: var(--gold);
@@ -697,7 +697,7 @@ section.s {
 .day-card ul li b {
   color: var(--ink);
   font-weight: 500;
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: 16px;
 }
@@ -740,12 +740,12 @@ section.s {
   align-items: center;
   justify-content: center;
   color: var(--gold);
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: 22px;
 }
 .about-card .t {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-weight: 500;
   font-size: 18px;
@@ -779,7 +779,7 @@ section.s {
   background: linear-gradient(180deg, var(--gold-soft), transparent 60%);
 }
 .event .e-tag {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 10px;
   letter-spacing: 0.28em;
   color: var(--gold);
@@ -790,7 +790,7 @@ section.s {
 }
 .event.featured .e-tag::before { content: "✦"; color: var(--gold); font-style: normal; }
 .event h3 {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-weight: 500;
   font-size: clamp(22px, 2.4vw, 32px);
   line-height: 1.05;
@@ -813,13 +813,13 @@ section.s {
   flex-wrap: wrap;
 }
 .event .e-meta .date {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: 22px;
   color: var(--ink);
 }
 .event .e-meta .where {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 10px;
   letter-spacing: 0.22em;
   color: var(--ink-mute);
@@ -845,7 +845,7 @@ section.s {
 .testimonial:hover { border-color: var(--gold-soft); transform: translateY(-4px); }
 .testimonial::before {
   content: "\201C";
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   position: absolute;
   top: 14px;
@@ -855,7 +855,7 @@ section.s {
   color: var(--gold);
 }
 .testimonial p {
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-size: 17px;
   line-height: 1.5;
@@ -885,7 +885,7 @@ section.s {
 }
 .testimonial .id .n { font-weight: 600; font-size: 14px; }
 .testimonial .id .r {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 10px;
   letter-spacing: 0.2em;
   color: var(--ink-mute);
@@ -907,7 +907,7 @@ section.s {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-bodoni), serif;
   font-style: italic;
   font-weight: 500;
   font-size: clamp(18px, 1.8vw, 22px);
@@ -989,7 +989,7 @@ section.s {
 }
 .cta-final .micro {
   margin-top: 36px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 10px;
   letter-spacing: 0.28em;
   color: var(--ink-mute);
@@ -1030,7 +1030,7 @@ footer.site-footer {
 .foot-brand .socials svg { width: 16px; height: 16px; }
 
 .foot-col h4 {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 11px;
   letter-spacing: 0.28em;
   color: var(--gold);
@@ -1048,7 +1048,7 @@ footer.site-footer {
   align-items: center;
   gap: 24px;
   flex-wrap: wrap;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-jetbrains), monospace;
   font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
