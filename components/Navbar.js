@@ -101,10 +101,12 @@ export default function Navbar() {
               renderLoadingState()
             ) : (
               <>
-                {user && userProfile ? (
+                {user ? (
                   <div className="flex items-center gap-3">
-                    <span className="text-white/60 text-sm">{userProfile.full_name || userProfile.email}</span>
-                    {userProfile.is_admin && (
+                    {userProfile && (
+                      <span className="text-white/60 text-sm">{userProfile.full_name || userProfile.email}</span>
+                    )}
+                    {userProfile?.is_admin && (
                       <Link href="/admin" className="text-[#f6bc7c] hover:text-white text-sm font-medium transition-colors px-3 py-1.5 rounded-lg hover:bg-white/10">
                         Administration
                       </Link>
@@ -112,27 +114,10 @@ export default function Navbar() {
                     <button
                       onClick={handleSignOut}
                       disabled={isLoggingOut}
-                      className="text-white/60 hover:text-white text-sm transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 disabled:opacity-50"
+                      className="text-white hover:text-[#f6bc7c] text-sm font-medium transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/20 hover:border-[#f6bc7c]/40 hover:bg-white/5 disabled:opacity-50"
                     >
                       {isLoggingOut && <FaSpinner className="animate-spin" />}
                       {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
-                    </button>
-                  </div>
-                ) : user && !userProfile ? (
-                  <div className="flex items-center gap-2">
-                    <FaExclamationTriangle className="text-yellow-500 text-sm" />
-                    <button
-                      onClick={refreshUserProfile}
-                      disabled={isRefreshing}
-                      className="text-[#f6bc7c] text-sm px-3 py-1.5 rounded-lg border border-[#f6bc7c]/30 hover:bg-[#f6bc7c]/10 transition-colors disabled:opacity-50"
-                    >
-                      {isRefreshing ? 'Rafraîchissement...' : 'Rafraîchir'}
-                    </button>
-                    <button
-                      onClick={handleSignOut}
-                      className="text-white/60 hover:text-white text-sm transition-colors"
-                    >
-                      Se déconnecter
                     </button>
                   </div>
                 ) : (
@@ -148,6 +133,12 @@ export default function Navbar() {
                       className="text-white/70 hover:text-[#f6bc7c] font-medium text-sm transition-colors px-3 py-2 rounded-lg hover:bg-white/5"
                     >
                       Notre Communauté
+                    </Link>
+                    <Link
+                      href="/admin"
+                      className="text-[#f6bc7c] hover:text-white text-sm font-medium transition-colors px-3 py-2 rounded-lg hover:bg-white/10"
+                    >
+                      Admin
                     </Link>
                     <Link
                       href="/login"
@@ -182,10 +173,12 @@ export default function Navbar() {
               renderLoadingState()
             ) : (
               <>
-                {user && userProfile ? (
+                {user ? (
                   <>
-                    <p className="text-white/50 text-sm px-3 py-2">{userProfile.full_name || userProfile.email}</p>
-                    {userProfile.is_admin && (
+                    {userProfile && (
+                      <p className="text-white/50 text-sm px-3 py-2">{userProfile.full_name || userProfile.email}</p>
+                    )}
+                    {userProfile?.is_admin && (
                       <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="text-[#f6bc7c] text-sm px-3 py-2 rounded-lg hover:bg-white/5 transition-colors">
                         Administration
                       </Link>
@@ -193,7 +186,7 @@ export default function Navbar() {
                     <button
                       onClick={handleSignOut}
                       disabled={isLoggingOut}
-                      className="text-white/60 text-sm text-left px-3 py-2 rounded-lg hover:bg-white/5 transition-colors flex items-center gap-2"
+                      className="text-white hover:text-[#f6bc7c] text-sm font-medium text-left px-3 py-2 rounded-lg border border-white/20 hover:border-[#f6bc7c]/40 hover:bg-white/5 transition-colors flex items-center gap-2 disabled:opacity-50"
                     >
                       {isLoggingOut && <FaSpinner className="animate-spin" />}
                       {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
@@ -214,6 +207,13 @@ export default function Navbar() {
                       className="text-white/70 hover:text-[#f6bc7c] text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       Notre Communauté
+                    </Link>
+                    <Link
+                      href="/admin"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-[#f6bc7c] text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
+                    >
+                      Admin
                     </Link>
                     <Link
                       href="/login"

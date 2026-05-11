@@ -3,12 +3,16 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import Seo from '../components/Seo';
+import { useAuth } from '../contexts/AuthContext';
+import { fetchEvents } from '../lib/firebase';
 
 export default function Home({ rating, userRatingsTotal }) {
+  const { user, userProfile, signOut } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const [events, setEvents] = useState([]);
 
   const danceSchoolSchema = {
     '@context': 'https://schema.org',
@@ -54,7 +58,10 @@ export default function Home({ rating, userRatingsTotal }) {
     }),
   };
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+    fetchEvents().then(setEvents).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
@@ -169,10 +176,10 @@ export default function Home({ rating, userRatingsTotal }) {
 
           <nav aria-label="Navigation principale">
             <ul className="nav-links">
+              <li><a href="#evenements">Événements</a></li>
               <li><a href="#cours">Cours</a></li>
               <li><a href="#niveaux">Niveaux</a></li>
               <li><a href="#planning">Planning</a></li>
-              <li><a href="#evenements">Événements</a></li>
               <li><a href="#temoignages">Avis</a></li>
               <li><a href="#faq">FAQ</a></li>
             </ul>
@@ -180,9 +187,21 @@ export default function Home({ rating, userRatingsTotal }) {
 
           <div className="nav-cta">
             <a href="#contact" className="btn btn-ghost">Contact</a>
-            <Link href="/inscription" className="btn btn-primary">
-              Essai gratuit <span className="arr">→</span>
-            </Link>
+            {mounted && user ? (
+              <>
+                {userProfile?.is_admin && (
+                  <Link href="/admin" className="btn btn-ghost">Admin</Link>
+                )}
+                <button onClick={signOut} className="btn btn-ghost">Se déconnecter</button>
+              </>
+            ) : (
+              <>
+                <Link href="/admin" className="btn btn-ghost">Admin</Link>
+                <Link href="/inscription" className="btn btn-primary">
+                  Essai gratuit <span className="arr">→</span>
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -198,15 +217,27 @@ export default function Home({ rating, userRatingsTotal }) {
 
       {/* ═══ MENU MOBILE ═══ */}
       <div className={`mobile-menu${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
-        <a href="#cours" onClick={() => setMenuOpen(false)}>Cours <span className="num">01</span></a>
-        <a href="#niveaux" onClick={() => setMenuOpen(false)}>Niveaux <span className="num">02</span></a>
-        <a href="#planning" onClick={() => setMenuOpen(false)}>Planning <span className="num">03</span></a>
-        <a href="#evenements" onClick={() => setMenuOpen(false)}>Événements <span className="num">04</span></a>
+        <a href="#evenements" onClick={() => setMenuOpen(false)}>Événements <span className="num">01</span></a>
+        <a href="#cours" onClick={() => setMenuOpen(false)}>Cours <span className="num">02</span></a>
+        <a href="#niveaux" onClick={() => setMenuOpen(false)}>Niveaux <span className="num">03</span></a>
+        <a href="#planning" onClick={() => setMenuOpen(false)}>Planning <span className="num">04</span></a>
         <a href="#temoignages" onClick={() => setMenuOpen(false)}>Témoignages <span className="num">05</span></a>
         <a href="#faq" onClick={() => setMenuOpen(false)}>FAQ <span className="num">06</span></a>
-        <Link href="/inscription" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
-          Réserver l&apos;essai gratuit <span className="arr">→</span>
-        </Link>
+        {mounted && user ? (
+          <>
+            {userProfile?.is_admin && (
+              <Link href="/admin" onClick={() => setMenuOpen(false)} className="btn btn-ghost">Admin</Link>
+            )}
+            <button onClick={() => { setMenuOpen(false); signOut(); }} className="btn btn-ghost">Se déconnecter</button>
+          </>
+        ) : (
+          <>
+            <Link href="/admin" onClick={() => setMenuOpen(false)} className="btn btn-ghost">Admin</Link>
+            <Link href="/inscription" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
+              Réserver l&apos;essai gratuit <span className="arr">→</span>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* ═══ HERO ═══ */}
@@ -329,12 +360,86 @@ export default function Home({ rating, userRatingsTotal }) {
         </div>
       </div>
 
+      {/* ═══ ÉVÉNEMENTS ═══ */}
+      <section className="events-wrap s" id="evenements">
+        <div className="wrap">
+          <div className="s-head" data-reveal>
+            <div>
+              <span className="eyebrow">01 — La scène salsa</span>
+              <h2 className="display">Bien plus que des <em>cours</em>.</h2>
+            </div>
+            <p className="s-aside">
+              La salsa, c&apos;est aussi des soirées, des stages internationaux et un festival qui fait
+              vibrer la Bretagne. Voilà ce qui vous attend cette saison.
+            </p>
+          </div>
+
+          <div className="events" data-reveal>
+            {events.length === 0 ? (
+              <>
+                <div className="event featured">
+                  <div>
+                    <span className="e-tag">Festival · Rennes</span>
+                    <h3>Breizh Loves <em>Mambo</em></h3>
+                    <p>Trois jours de stages avec des danseurs internationaux, soirées dansantes et performances. L&apos;événement salsa de l&apos;ouest.</p>
+                  </div>
+                  <div className="e-meta">
+                    <span className="date">Avril 2027</span>
+                    <span className="where">Rennes · 3 jours</span>
+                  </div>
+                </div>
+                <div className="event">
+                  <div>
+                    <span className="e-tag">Mensuel</span>
+                    <h3>Soirée <em>Salsa</em></h3>
+                    <p>Une soirée par mois, ouverte à tous les niveaux. Practica encadrée puis piste libre jusqu&apos;à minuit.</p>
+                  </div>
+                  <div className="e-meta">
+                    <span className="date">1er sam.</span>
+                    <span className="where">Studio · 21h</span>
+                  </div>
+                </div>
+                <div className="event">
+                  <div>
+                    <span className="e-tag">Stage invité</span>
+                    <h3>Workshops <em>internationaux</em></h3>
+                    <p>Plusieurs fois dans l&apos;année, des invités venus de Cuba, NYC et Paris pour des week-ends intensifs.</p>
+                  </div>
+                  <div className="e-meta">
+                    <span className="date">Saison</span>
+                    <span className="where">Sur inscription</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              events.map((ev) => (
+                <div key={ev.id} className={`event${ev.featured ? ' featured' : ''}`}>
+                  <div>
+                    {ev.tag && <span className="e-tag">{ev.tag}</span>}
+                    <h3 dangerouslySetInnerHTML={{ __html: ev.title }} />
+                    {ev.description && <p>{ev.description}</p>}
+                  </div>
+                  <div className="e-meta">
+                    {ev.date && <span className="date">{ev.date}</span>}
+                    {ev.location && <span className="where">{ev.location}</span>}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '48px' }} data-reveal>
+            <a href="#contact" className="btn-link">Voir l&apos;agenda complet →</a>
+          </div>
+        </div>
+      </section>
+
       {/* ═══ ATOUTS ═══ */}
       <section className="s" id="cours">
         <div className="wrap">
           <div className="s-head" data-reveal>
             <div>
-              <span className="eyebrow">01 — Pourquoi nous choisir</span>
+              <span className="eyebrow">02 — Pourquoi nous choisir</span>
               <h2 className="display">Une école qui transmet, pas qui sélectionne.</h2>
             </div>
             <p className="s-aside">
@@ -377,7 +482,7 @@ export default function Home({ rating, userRatingsTotal }) {
         <div className="wrap">
           <div className="s-head" data-reveal>
             <div>
-              <span className="eyebrow">02 — Les niveaux</span>
+              <span className="eyebrow">03 — Les niveaux</span>
               <h2 className="display">Trois niveaux, une <em>trajectoire</em>.</h2>
             </div>
             <p className="s-aside">
@@ -432,7 +537,7 @@ export default function Home({ rating, userRatingsTotal }) {
           <div style={{ padding: '0 var(--gutter)' }}>
             <div className="s-head" data-reveal>
               <div>
-                <span className="eyebrow">03 — Planning hebdo</span>
+                <span className="eyebrow">04 — Planning hebdo</span>
                 <h2 className="display">Quatre soirs, <em>une école qui vit</em>.</h2>
               </div>
               <p className="s-aside">
@@ -491,7 +596,7 @@ export default function Home({ rating, userRatingsTotal }) {
               <Image src="/images/clem-eric.webp" alt="Clem & Eric — professeurs Qué Rico Mambo" width={600} height={800} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div data-reveal>
-              <span className="eyebrow">04 — Notre école</span>
+              <span className="eyebrow">05 — Notre école</span>
               <h2
                 className="display"
                 style={{ fontSize: 'var(--t-h2)', marginTop: '18px', maxWidth: '18ch' }}
@@ -531,62 +636,6 @@ export default function Home({ rating, userRatingsTotal }) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ ÉVÉNEMENTS ═══ */}
-      <section className="events-wrap s" id="evenements">
-        <div className="wrap">
-          <div className="s-head" data-reveal>
-            <div>
-              <span className="eyebrow">05 — La scène salsa</span>
-              <h2 className="display">Bien plus que des <em>cours</em>.</h2>
-            </div>
-            <p className="s-aside">
-              La salsa, c&apos;est aussi des soirées, des stages internationaux et un festival qui fait
-              vibrer la Bretagne. Voilà ce qui vous attend cette saison.
-            </p>
-          </div>
-
-          <div className="events" data-reveal>
-            <div className="event featured">
-              <div>
-                <span className="e-tag">Festival · Rennes</span>
-                <h3>Breizh Loves <em>Mambo</em></h3>
-                <p>Trois jours de stages avec des danseurs internationaux, soirées dansantes et performances. L&apos;événement salsa de l&apos;ouest.</p>
-              </div>
-              <div className="e-meta">
-                <span className="date">Avril 2027</span>
-                <span className="where">Rennes · 3 jours</span>
-              </div>
-            </div>
-            <div className="event">
-              <div>
-                <span className="e-tag">Mensuel</span>
-                <h3>Soirée <em>Salsa</em></h3>
-                <p>Une soirée par mois, ouverte à tous les niveaux. Practica encadrée puis piste libre jusqu&apos;à minuit.</p>
-              </div>
-              <div className="e-meta">
-                <span className="date">1er sam.</span>
-                <span className="where">Studio · 21h</span>
-              </div>
-            </div>
-            <div className="event">
-              <div>
-                <span className="e-tag">Stage invité</span>
-                <h3>Workshops <em>internationaux</em></h3>
-                <p>Plusieurs fois dans l&apos;année, des invités venus de Cuba, NYC et Paris pour des week-ends intensifs.</p>
-              </div>
-              <div className="e-meta">
-                <span className="date">Saison</span>
-                <span className="where">Sur inscription</span>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ textAlign: 'center', marginTop: '48px' }} data-reveal>
-            <a href="#contact" className="btn-link">Voir l&apos;agenda complet →</a>
           </div>
         </div>
       </section>
