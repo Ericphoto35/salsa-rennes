@@ -139,7 +139,9 @@ export default function Home({ rating, userRatingsTotal }) {
         title="Salsa Rennes — Qué Rico Mambo · École de salsa cubaine et portoricaine"
         description="Apprenez la salsa à Rennes avec Qué Rico Mambo. École de danse portoricaine et cubaine pour tous niveaux. Cours du lundi au jeudi, cours d'essai gratuit."
         url="https://www.salsarennes.fr"
-        image="/images/logo.png"
+        image="/images/clem-eric.webp"
+        imageWidth={600}
+        imageHeight={800}
         keywords="salsa rennes, cours salsa rennes, école de danse rennes, salsa cubaine rennes, salsa portoricaine, apprendre salsa bretagne, soirées salsa rennes, professeurs salsa, danse latine rennes, cours débutant salsa"
       />
       <Head>
@@ -269,10 +271,10 @@ export default function Home({ rating, userRatingsTotal }) {
           <div className="hero-copy" data-reveal>
             <div className="eyebrow">Cours · Stages · Soirées · Rennes</div>
             <h1 className="display">
-              Apprenez la <em>salsa</em> à Rennes avec des profs <em>passionnés.</em>
+              <em>Salsa Rennes</em> — Apprenez avec des profs <em>passionnés.</em>
             </h1>
             <p className="hero-sub">
-              École de salsa portoricaine — du débutant absolu au danseur confirmé.
+              École de salsa portoricaine à Rennes — du débutant absolu au danseur confirmé.
               Quatre soirs par semaine, dix ans à transmettre la passion.
             </p>
             <div className="hero-cta">
@@ -327,7 +329,7 @@ export default function Home({ rating, userRatingsTotal }) {
               <span className="dot" />
               Inscriptions ouvertes
             </span>
-            <Image src="/images/clem-eric.webp" alt="Vos professeurs — Qué Rico Mambo" width={600} height={800} priority style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <Image src="/images/clem-eric.webp" alt="Professeurs de salsa à Rennes — Qué Rico Mambo" width={600} height={800} priority style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <figcaption className="cap">
               <span className="who">
                 Vos professeurs
