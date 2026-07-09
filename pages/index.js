@@ -418,7 +418,7 @@ export default function Home({ rating, userRatingsTotal }) {
                 <div key={ev.id} className={`event${ev.featured ? ' featured' : ''}`}>
                   <div>
                     {ev.tag && <span className="e-tag">{ev.tag}</span>}
-                    <h3 dangerouslySetInnerHTML={{ __html: ev.title }} />
+                    <h3>{ev.title}</h3>
                     {ev.description && <p>{ev.description}</p>}
                   </div>
                   <div className="e-meta">
