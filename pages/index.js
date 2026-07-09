@@ -278,7 +278,7 @@ export default function Home({ rating, userRatingsTotal }) {
               Quatre soirs par semaine, dix ans à transmettre la passion.
             </p>
             <div className="hero-cta">
-              <Link href="/inscription" className="btn btn-primary">
+              <Link href="https://www.quericomambo.fr/preinscriptions" className="btn btn-primary">
                 Réserver un cours d&apos;essai <span className="arr">→</span>
               </Link>
               <a href="#cours" className="btn btn-ghost">Découvrir nos cours</a>
@@ -472,6 +472,26 @@ export default function Home({ rating, userRatingsTotal }) {
               <p>Practica mensuelle, stages avec danseurs internationaux, festivals comme Breizh Loves Mambo. La salsa hors les murs.</p>
             </div>
           </div>
+
+          <div className="atouts-social" data-reveal aria-label="Réseaux sociaux">
+            <a href="https://www.facebook.com/quericomambo.fr" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.1H8v3h2.4V21h3.1z" />
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/quericomambo_salsa/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="16" height="16">
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r=".75" fill="currentColor" stroke="none" />
+              </svg>
+            </a>
+            <a href="https://www.tiktok.com/@ericsoret" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.79a8.18 8.18 0 004.82 1.56V6.9a4.84 4.84 0 01-1.05-.21z" />
+              </svg>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -583,7 +603,7 @@ export default function Home({ rating, userRatingsTotal }) {
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '48px', padding: '0 var(--gutter)' }} data-reveal>
-            <Link href="/inscription" className="btn btn-primary">
+            <Link href="https://www.quericomambo.fr/preinscriptions" className="btn btn-primary">
               Réserver un cours d&apos;essai <span className="arr">→</span>
             </Link>
           </div>

@@ -702,6 +702,29 @@ section.s {
   font-size: 16px;
 }
 
+.atouts-social {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 48px;
+}
+.atouts-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink-mute);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.atouts-social a:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: var(--gold-soft);
+}
+
 /* ===== ABOUT ===== */
 .about-grid {
   display: grid;
