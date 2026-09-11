@@ -135,12 +135,6 @@ export default function Navbar() {
                       Notre Communauté
                     </Link>
                     <Link
-                      href="/admin"
-                      className="text-[#f6bc7c] hover:text-white text-sm font-medium transition-colors px-3 py-2 rounded-lg hover:bg-white/10"
-                    >
-                      Admin
-                    </Link>
-                    <Link
                       href="/login"
                       className="text-white/70 hover:text-white font-medium text-sm transition-colors px-3 py-2 rounded-lg hover:bg-white/5 ml-1"
                     >
@@ -207,13 +201,6 @@ export default function Navbar() {
                       className="text-white/70 hover:text-[#f6bc7c] text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       Notre Communauté
-                    </Link>
-                    <Link
-                      href="/admin"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-[#f6bc7c] text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
-                    >
-                      Admin
                     </Link>
                     <Link
                       href="/login"

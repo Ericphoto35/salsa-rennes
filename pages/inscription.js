@@ -59,9 +59,11 @@ export default function Inscription() {
         { name: 'Inscription', url: 'https://www.salsarennes.fr/inscription' },
       ]} />
       <Seo
-        title="Inscription - Salsa Rennes"
-        description="Inscrivez-vous aux cours de salsa à Rennes. Rejoignez la communauté Salsa Rennes et découvrez nos cours, stages et soirées."
+        title="Cours d'essai salsa Rennes — Inscription | Qué Rico Mambo"
+        description="Réservez votre cours d'essai de salsa à Rennes avec Qué Rico Mambo. Débutants bienvenus, inscription en ligne sans engagement."
         url="https://www.salsarennes.fr/inscription"
+        image="/images/clem-eric.webp"
+        keywords="inscription salsa rennes, cours d'essai salsa, rejoindre école danse rennes, qué rico mambo inscription"
       />
 
       <Navbar isLoggedIn={!!user} />
