@@ -1,11 +1,12 @@
 const BASE_URL = 'https://www.salsarennes.fr';
 
 const pages = [
-  { path: '',                           changefreq: 'weekly',  priority: '1.0', lastmod: '2026-05-09' },
-  { path: '/pourquoi-salsa',            changefreq: 'monthly', priority: '0.9', lastmod: '2026-05-09' },
-  { path: '/notre-communaute',          changefreq: 'weekly',  priority: '0.7', lastmod: '2026-05-09' },
-  { path: '/inscription',               changefreq: 'monthly', priority: '0.8', lastmod: '2026-05-09' },
-  { path: '/politique-de-confidentialite', changefreq: 'yearly', priority: '0.3', lastmod: '2025-01-01' },
+  { path: '',                              changefreq: 'weekly',  priority: '1.0', lastmod: '2026-09-11' },
+  { path: '/pourquoi-salsa',               changefreq: 'monthly', priority: '0.9', lastmod: '2026-09-11' },
+  { path: '/notre-communaute',             changefreq: 'weekly',  priority: '0.7', lastmod: '2026-09-11' },
+  { path: '/inscription',                  changefreq: 'monthly', priority: '0.8', lastmod: '2026-09-11' },
+  { path: '/mentions-legales',             changefreq: 'yearly',  priority: '0.3', lastmod: '2026-09-11' },
+  { path: '/politique-de-confidentialite', changefreq: 'yearly',  priority: '0.3', lastmod: '2026-09-11' },
 ];
 
 export default function handler(req, res) {

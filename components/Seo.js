@@ -1,9 +1,18 @@
 import Head from 'next/head';
 
+const SITE_ORIGIN = 'https://www.salsarennes.fr';
+
+function resolveImageUrl(image) {
+  if (!image) return `${SITE_ORIGIN}/images/clem-eric.webp`;
+  if (image.startsWith('http://') || image.startsWith('https://')) return image;
+  if (image.startsWith('/')) return `${SITE_ORIGIN}${image}`;
+  return `${SITE_ORIGIN}/${image}`;
+}
+
 export default function Seo({
   title = 'Salsa Rennes',
   description = 'Le site de référence pour la salsa à Rennes : soirées, cours, événements, et plus encore.',
-  url = 'https://www.salsarennes.fr',
+  url = SITE_ORIGIN,
   image = '/images/clem-eric.webp',
   imageWidth = 1200,
   imageHeight = 630,
@@ -11,9 +20,10 @@ export default function Seo({
   noIndex = false,
   keywords = 'salsa rennes, cours de salsa, danse latine, école de danse rennes',
 }) {
-  // URL complète de l'image
-  const fullImageUrl = `${url}${image}`;
-  
+  // Toujours ancrer l'image sur l'origine du site (pas sur l'URL de la page),
+  // sinon /pourquoi-salsa + /images/... → /pourquoi-salsa/images/... (404).
+  const fullImageUrl = resolveImageUrl(image);
+
   return (
     <Head>
       {/* Balises de base */}
@@ -22,7 +32,7 @@ export default function Seo({
       <meta name="keywords" content={keywords} />
       <meta name="language" content="fr" />
       <meta httpEquiv="content-language" content="fr" />
-      
+
       {/* Open Graph / Facebook */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
@@ -33,7 +43,7 @@ export default function Seo({
       <meta property="og:image:height" content={imageHeight.toString()} />
       <meta property="og:locale" content="fr_FR" />
       <meta property="og:site_name" content="Salsa Rennes" />
-      
+
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />

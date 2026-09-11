@@ -197,12 +197,9 @@ export default function Home({ rating, userRatingsTotal }) {
                 <button onClick={signOut} className="btn btn-ghost">Se déconnecter</button>
               </>
             ) : (
-              <>
-                <Link href="/admin" className="btn btn-ghost">Admin</Link>
-                <Link href="/inscription" className="btn btn-primary">
-                  Essai gratuit <span className="arr">→</span>
-                </Link>
-              </>
+              <Link href="/inscription" className="btn btn-primary">
+                Essai gratuit <span className="arr">→</span>
+              </Link>
             )}
           </div>
 
@@ -233,12 +230,9 @@ export default function Home({ rating, userRatingsTotal }) {
             <button onClick={() => { setMenuOpen(false); signOut(); }} className="btn btn-ghost">Se déconnecter</button>
           </>
         ) : (
-          <>
-            <Link href="/admin" onClick={() => setMenuOpen(false)} className="btn btn-ghost">Admin</Link>
-            <Link href="/inscription" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
-              Réserver l&apos;essai gratuit <span className="arr">→</span>
-            </Link>
-          </>
+          <Link href="/inscription" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
+            Réserver l&apos;essai gratuit <span className="arr">→</span>
+          </Link>
         )}
       </div>
 
@@ -860,7 +854,7 @@ export default function Home({ rating, userRatingsTotal }) {
             <span>© 2026 Qué Rico Mambo · Salsa Rennes</span>
             <div className="legal">
               <Link href="/politique-de-confidentialite">Politique de confidentialité</Link>
-              <a href="#top">Mentions légales</a>
+              <Link href="/mentions-legales">Mentions légales</Link>
             </div>
           </div>
         </div>
