@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const QRM = 'https://www.quericomambo.fr';
+
 const nextConfig = {
   reactStrictMode: false,
 
@@ -31,11 +33,80 @@ const nextConfig = {
     ];
   },
 
-  async rewrites() {
+  // Migration définitive vers quericomambo.fr (permanent: true = HTTP 308).
+  // Les query strings sont préservées par Next.js.
+  // Viser toujours https://www.quericomambo.fr pour éviter une chaîne apex→www.
+  async redirects() {
     return [
       {
+        source: '/',
+        destination: `${QRM}/`,
+        permanent: true,
+      },
+      {
+        source: '/inscription',
+        destination: `${QRM}/preinscriptions`,
+        permanent: true,
+      },
+      {
+        source: '/pourquoi-salsa',
+        destination: `${QRM}/quest-ce-que-la-salsa`,
+        permanent: true,
+      },
+      {
+        source: '/notre-communaute',
+        destination: `${QRM}/notre-compte-instagram`,
+        permanent: true,
+      },
+      {
+        source: '/mentions-legales',
+        destination: `${QRM}/politique-de-confidentialite`,
+        permanent: true,
+      },
+      {
+        source: '/politique-de-confidentialite',
+        destination: `${QRM}/politique-de-confidentialite`,
+        permanent: true,
+      },
+      {
+        source: '/niveaux/debutant',
+        destination: `${QRM}/cours-salsa-debutant-rennes`,
+        permanent: true,
+      },
+      {
+        source: '/niveaux/intermediaire',
+        destination: `${QRM}/cours-intermediaire-de-salsa`,
+        permanent: true,
+      },
+      {
+        source: '/niveaux/avance',
+        destination: `${QRM}/cours-inter-2`,
+        permanent: true,
+      },
+      {
         source: '/sitemap.xml',
-        destination: '/api/sitemap',
+        destination: `${QRM}/sitemap.xml`,
+        permanent: true,
+      },
+      {
+        source: '/login',
+        destination: `${QRM}/`,
+        permanent: true,
+      },
+      {
+        source: '/admin',
+        destination: `${QRM}/`,
+        permanent: true,
+      },
+      {
+        source: '/profile',
+        destination: `${QRM}/`,
+        permanent: true,
+      },
+      {
+        source: '/session-recovery',
+        destination: `${QRM}/`,
+        permanent: true,
       },
     ];
   },
