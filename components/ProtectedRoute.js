@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
 import { FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
@@ -10,9 +10,9 @@ export default function ProtectedRoute({ children }) {
   const [refreshAttempts, setRefreshAttempts] = useState(0);
   const [refreshError, setRefreshError] = useState('');
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     if (!user || refreshAttempts >= 3) return;
-    
+
     try {
       setIsRefreshing(true);
       setRefreshError('');
@@ -24,7 +24,7 @@ export default function ProtectedRoute({ children }) {
     } finally {
       setIsRefreshing(false);
     }
-  };
+  }, [user, refreshAttempts, fetchUserProfile]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -35,7 +35,7 @@ export default function ProtectedRoute({ children }) {
     if (!loading && user && !userProfile && refreshAttempts === 0) {
       handleRefresh();
     }
-  }, [user, userProfile, loading, router, refreshAttempts]);
+  }, [user, userProfile, loading, router, refreshAttempts, handleRefresh]);
 
   // Afficher un écran de chargement pendant la vérification
   if (loading || isRefreshing) {
@@ -72,7 +72,7 @@ export default function ProtectedRoute({ children }) {
                 onClick={() => router.push('/')}
                 className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
               >
-                Retour à l'accueil
+                {"Retour à l'accueil"}
               </button>
               <button
                 onClick={() => router.push('/login?refresh=true')}

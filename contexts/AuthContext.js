@@ -48,6 +48,11 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     isMounted.current = true;
 
+    if (!auth) {
+      safeSet(setLoading, false);
+      return undefined;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!isMounted.current) return;
 

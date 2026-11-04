@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import CookieConsent from 'react-cookie-consent';
 
 const CookieConsentBanner = () => {
@@ -43,14 +44,14 @@ const CookieConsentBanner = () => {
             Ce site utilise des cookies pour améliorer votre expérience de navigation, analyser le trafic et personnaliser le contenu.
           </p>
           <p className="text-white text-sm">
-            En cliquant sur "J'accepte", vous consentez à notre utilisation des cookies conformément à notre{" "}
-            <a 
-              href="/politique-de-confidentialite" 
+            {"En cliquant sur \"J'accepte\", vous consentez à notre utilisation des cookies conformément à notre "}
+            <Link
+              href="/politique-de-confidentialite"
               className="text-[#f6bc7c] underline hover:no-underline"
               onClick={(e) => e.stopPropagation()}
             >
               politique de confidentialité
-            </a>.
+            </Link>.
           </p>
         </div>
       </div>

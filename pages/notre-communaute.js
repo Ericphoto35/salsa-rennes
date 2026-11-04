@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import Seo from '../components/Seo';
@@ -160,7 +161,7 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
 
         {!loading && !error && posts.length === 0 && (
           <div className="text-center text-white/70 py-12">
-            <p>Aucune publication Instagram n'a été trouvée.</p>
+            <p>{"Aucune publication Instagram n'a été trouvée."}</p>
             <p className="mt-2">
               Consultez notre profil Instagram{' '}
               <a
@@ -183,12 +184,12 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
             Suivez-nous sur Instagram pour découvrir nos événements, cours et soirées salsa à Rennes.
             Partagez vos moments de danse avec le hashtag <span className="text-[#f6bc7c]">#SalsaRennes</span> !
           </p>
-          <a
+          <Link
             href="/inscription"
             className="inline-flex items-center gap-2 bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#121212] px-8 py-3.5 rounded-full font-bold hover:shadow-lg hover:shadow-[#f6bc7c]/25 transition-all duration-300 hover:scale-105"
           >
             Rejoindre nos cours
-          </a>
+          </Link>
         </div>
       </div>
     </div>

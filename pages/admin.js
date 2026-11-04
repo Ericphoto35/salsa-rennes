@@ -39,7 +39,7 @@ export default function Admin() {
     if (!userProfile.is_admin) { router.push('/'); return; }
     loadUsers();
     loadEvents();
-  }, [user, userProfile]);
+  }, [user, userProfile, router]);
 
   const loadUsers = async () => {
     try {
@@ -320,7 +320,7 @@ export default function Admin() {
                     />
                   </div>
                   <div>
-                    <label className="block text-white/60 text-xs mb-1">Ordre d'affichage</label>
+                    <label className="block text-white/60 text-xs mb-1">{"Ordre d'affichage"}</label>
                     <input
                       type="number"
                       value={eventForm.order}

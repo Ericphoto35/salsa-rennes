@@ -33,9 +33,9 @@ export default function PolitiqueConfidentialite() {
 
         <section className="mb-10">
           <h2 className="text-2xl font-semibold mb-4 text-[#f6bc7c]">2. Données collectées</h2>
-          <p className="mb-4">Nous collectons les types d'informations suivants :</p>
+          <p className="mb-4">{"Nous collectons les types d'informations suivants :"}</p>
           <ul className="list-disc pl-6 mb-4 space-y-2">
-            <li>Informations que vous nous fournissez volontairement (nom, adresse e-mail, numéro de téléphone) lors de l'inscription aux cours ou à la newsletter.</li>
+            <li>{"Informations que vous nous fournissez volontairement (nom, adresse e-mail, numéro de téléphone) lors de l'inscription aux cours ou à la newsletter."}</li>
             <li>Informations collectées automatiquement (adresse IP, type de navigateur, pages visitées, temps passé sur le site) via les cookies et technologies similaires.</li>
           </ul>
         </section>
@@ -58,7 +58,7 @@ export default function PolitiqueConfidentialite() {
             <li><strong>Cookies de fonctionnalité</strong> : permettent de mémoriser vos préférences</li>
           </ul>
           <p>
-            Vous pouvez contrôler et/ou supprimer les cookies comme vous le souhaitez. Vous pouvez supprimer tous les cookies déjà présents sur votre appareil et paramétrer la plupart des navigateurs pour qu'ils les bloquent. Toutefois, si vous faites cela, vous devrez peut-être ajuster manuellement certaines préférences chaque fois que vous visiterez le site.
+            {"Vous pouvez contrôler et/ou supprimer les cookies comme vous le souhaitez. Vous pouvez supprimer tous les cookies déjà présents sur votre appareil et paramétrer la plupart des navigateurs pour qu'ils les bloquent. Toutefois, si vous faites cela, vous devrez peut-être ajuster manuellement certaines préférences chaque fois que vous visiterez le site."}
           </p>
         </section>
 
@@ -69,7 +69,7 @@ export default function PolitiqueConfidentialite() {
             <li>Fournir et améliorer nos services</li>
             <li>Communiquer avec vous concernant nos cours et événements</li>
             <li>Personnaliser votre expérience sur notre site</li>
-            <li>Analyser l'utilisation de notre site pour l'améliorer</li>
+            <li>{"Analyser l'utilisation de notre site pour l'améliorer"}</li>
           </ul>
         </section>
 
@@ -88,15 +88,15 @@ export default function PolitiqueConfidentialite() {
           <h2 className="text-2xl font-semibold mb-4 text-[#f6bc7c]">6. Vos droits</h2>
           <p className="mb-4">Conformément au RGPD, vous disposez des droits suivants :</p>
           <ul className="list-disc pl-6 mb-4 space-y-2">
-            <li>Droit d'accès à vos données personnelles</li>
+            <li>{"Droit d'accès à vos données personnelles"}</li>
             <li>Droit de rectification des données inexactes</li>
-            <li>Droit à l'effacement de vos données</li>
+            <li>{"Droit à l'effacement de vos données"}</li>
             <li>Droit à la limitation du traitement</li>
             <li>Droit à la portabilité des données</li>
-            <li>Droit d'opposition au traitement</li>
+            <li>{"Droit d'opposition au traitement"}</li>
           </ul>
           <p>
-            Pour exercer ces droits, veuillez nous contacter à l'adresse email : contact@salsarennes.fr
+            {"Pour exercer ces droits, veuillez nous contacter à l'adresse email : contact@salsarennes.fr"}
           </p>
         </section>
 
@@ -117,7 +117,7 @@ export default function PolitiqueConfidentialite() {
         <section>
           <h2 className="text-2xl font-semibold mb-4 text-[#f6bc7c]">9. Contact</h2>
           <p>
-            Si vous avez des questions concernant cette politique de confidentialité, veuillez nous contacter à l'adresse email : contact@salsarennes.fr
+            {"Si vous avez des questions concernant cette politique de confidentialité, veuillez nous contacter à l'adresse email : contact@salsarennes.fr"}
           </p>
         </section>
       </main>

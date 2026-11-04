@@ -159,7 +159,7 @@ export default function Login() {
 
               <div className="text-center text-sm">
                 <Link href="/inscription" className="text-[#f6bc7c] hover:text-[#f6bc7c]/80 transition-colors">
-                  Pas encore de compte ? S'inscrire
+                  {"Pas encore de compte ? S'inscrire"}
                 </Link>
               </div>
             </div>

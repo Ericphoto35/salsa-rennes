@@ -17,6 +17,7 @@ const bodoni = Bodoni_Moda({
   style: ['normal', 'italic'],
   variable: '--font-bodoni',
   display: 'swap',
+  adjustFontFallback: false,
 })
 
 const manrope = Manrope({

@@ -38,11 +38,8 @@ const nextConfig = {
   // Viser toujours https://www.quericomambo.fr pour éviter une chaîne apex→www.
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: `${QRM}/`,
-        permanent: true,
-      },
+      // L'accueil sert le site statique (public/site) via middleware.
+      // Les anciennes URLs publiques restent redirigées.
       {
         source: '/inscription',
         destination: `${QRM}/preinscriptions`,

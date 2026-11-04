@@ -144,7 +144,7 @@ export default function Navbar() {
                       href="/inscription"
                       className="ml-1 bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#121212] px-5 py-2 rounded-full text-sm font-semibold hover:shadow-lg hover:shadow-[#f6bc7c]/20 transition-all duration-300 hover:scale-105"
                     >
-                      S'inscrire
+                      {"S'inscrire"}
                     </Link>
                   </div>
                 )}
@@ -214,7 +214,7 @@ export default function Navbar() {
                       onClick={() => setIsMenuOpen(false)}
                       className="mt-2 bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#121212] px-5 py-2.5 rounded-full text-sm font-semibold text-center hover:shadow-lg transition-all duration-300"
                     >
-                      S'inscrire
+                      {"S'inscrire"}
                     </Link>
                   </>
                 )}
