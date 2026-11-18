@@ -353,6 +353,7 @@ const boot = () => {
     }
 
     lastFocus = document.activeElement;
+    modal.inert = false;
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -365,6 +366,7 @@ const boot = () => {
     document.querySelectorAll('.modal-backdrop.is-open').forEach((modal) => {
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
+      modal.inert = true;
     });
     if (videoContainer) videoContainer.replaceChildren();
     document.body.style.overflow = '';
@@ -381,7 +383,13 @@ const boot = () => {
 
   const openPlanningLightbox = document.getElementById('openPlanningLightbox');
   if (openPlanningLightbox) {
-    openPlanningLightbox.addEventListener('click', () => openModal('planningModal'));
+    openPlanningLightbox.addEventListener('click', () => {
+      const img = document.querySelector('#planningModal img');
+      if (img && img.dataset.src && !img.getAttribute('src')) {
+        img.src = img.dataset.src;
+      }
+      openModal('planningModal');
+    });
   }
 
   document.querySelectorAll('[data-close-modal]').forEach((btn) => {

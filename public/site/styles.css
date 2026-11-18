@@ -1994,12 +1994,14 @@ html.js .reveal.is-visible {
   padding: 20px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.35s ease;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
 }
 
 .modal-backdrop.is-open {
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
 }
 
 .modal-card {
