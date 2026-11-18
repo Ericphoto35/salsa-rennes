@@ -12,6 +12,48 @@
    - Body / UI:              'DM Sans', sans-serif
    ========================================================================== */
 
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url('/fonts/oswald-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Oswald Fallback';
+  src: local('Arial');
+  size-adjust: 86%;
+  ascent-override: 105%;
+  descent-override: 28%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/dm-sans-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/dm-sans-italic-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'DM Sans Fallback';
+  src: local('Arial');
+  size-adjust: 102%;
+  ascent-override: 95%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
 :root {
   /* Core Brand Colors (Strictly preserved from quericomambo.fr) */
   --gold: #D9A673;
@@ -39,8 +81,8 @@
   --text-dark: #1A1A1A;
 
   /* Typography */
-  --font-display: 'Oswald', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  --font-display: 'Oswald', 'Oswald Fallback', sans-serif;
+  --font-body: 'DM Sans', 'DM Sans Fallback', sans-serif;
 
   /* Layout & Motion */
   --container: 1260px;

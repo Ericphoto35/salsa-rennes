@@ -9,12 +9,9 @@
   <link rel="icon" type="image/png" href="/images/logo-qrm.png" />
   <link rel="apple-touch-icon" href="/images/logo-qrm.png" />
 
-  <!-- Official Brand Fonts from quericomambo.fr: Oswald & DM Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="/images/hero-800.webp" media="(max-width: 900px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/images/hero-1280.webp" media="(min-width: 901px)" fetchpriority="high" />
 
-  
   <meta name="theme-color" content="#0A0B0D" />
   <meta property="og:title" content="Cours de Salsa Rennes — Qué Rico MAMBO" />
   <meta property="og:description" content="Apprenez la salsa portoricaine à Rennes avec Clémentine et Éric. Cours tous niveaux, Shine Footwork, Lady Styling et soirées mensuelles." />
@@ -116,8 +113,13 @@
        ======================================================================== -->
   <section class="hero" id="accueil">
     <div class="hero__bg">
-      <img decoding="async"
-        src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1600,fit=cover/A3QBKEBzRxhD7y3l/480985269_1254614129548861_6860559165897592387_n-V67zWtRRUYQPWunT.jpg"
+      <img
+        src="/images/hero-1280.webp"
+        srcset="/images/hero-800.webp 800w, /images/hero-1280.webp 1280w"
+        sizes="100vw"
+        width="1600"
+        height="1066"
+        fetchpriority="high"
         alt="Clémentine et Éric donnant les cours de salsa à Rennes"
         class="hero__bg-img"
       />
@@ -187,8 +189,11 @@
       <!-- Right Interactive Visual & Video Showcase Card -->
       <div class="hero__showcase reveal reveal-delay-2 is-visible">
         <div class="showcase-card" id="heroTiltCard">
-          <img decoding="async"
-            src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1440,h=756,fit=crop,f=jpeg/A3QBKEBzRxhD7y3l/website2-ALp8wB79PMtXNvbr.png"
+          <img
+            src="/images/showcase-800.webp"
+            width="960"
+            height="640"
+            decoding="async"
             alt="Éric et Clémentine — Professeurs Qué Rico MAMBO Rennes"
             class="showcase-card__img"
           />
@@ -326,7 +331,7 @@
         <article class="course-card reveal reveal-delay-2" data-category="inter2">
           <div class="course-card__media">
             <img loading="lazy" decoding="async"
-              src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1600,fit=cover/A3QBKEBzRxhD7y3l/480985269_1254614129548861_6860559165897592387_n-V67zWtRRUYQPWunT.jpg"
+              src="/images/hero-1280.webp"
               alt="Cours de Salsa Inter 2 et Avancé à Rennes"
               class="course-card__img"
             />
