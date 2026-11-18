@@ -30,6 +30,18 @@ const nextConfig = {
         ],
       },
       {
+        source: '/site/styles.css',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/site/app.js',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
         // Fonts auto-hébergées par next/font
         source: '/_next/static/(.*)',
         headers: [
