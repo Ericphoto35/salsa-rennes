@@ -9,7 +9,7 @@ const PAGES = {
   '/blog': '/site/blog.html',
 };
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
   const page = PAGES[pathname];
   if (page) {
