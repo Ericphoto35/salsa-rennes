@@ -2,11 +2,34 @@
    QUÉ RICO MAMBO — RENNES | MOTION DESIGN & INTERACTIVE UX ENGINE
    ========================================================================== */
 
-const WHATSAPP_NUMBER = '33761461892';
-const WHATSAPP_DISPLAY = '07 61 46 18 92';
+const WEB3FORMS_ACCESS_KEY = '05382d22-d210-4752-874d-08cc2c041940';
 
-const whatsappUrl = (text) =>
-  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+const sendToInbox = async (fields) => {
+  const response = await fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      access_key: WEB3FORMS_ACCESS_KEY,
+      botcheck: '',
+      ...fields,
+    }),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || 'Envoi impossible');
+  }
+  return data;
+};
+
+const showFormStatus = (el, text, isError) => {
+  el.textContent = text;
+  el.style.display = 'block';
+  el.style.borderColor = isError ? '#e07a7a' : '';
+  el.style.color = isError ? '#ffd0d0' : '';
+};
 
 const boot = () => {
   const scrollProgress = document.getElementById('scrollProgress');
@@ -57,6 +80,7 @@ const boot = () => {
 
     navLinks.forEach((link) => {
       const href = link.getAttribute('href');
+      if (!href || href.charAt(0) !== '#') return;
       const active = href === `#${currentSectionId}`;
       link.classList.toggle('active', active);
       if (link.getAttribute('role') === 'tab') return;
@@ -461,67 +485,106 @@ const boot = () => {
   /* --------------------------------------------------------------------------
      11. REGISTRATION & NEWSLETTER FORM SUBMISSIONS
      -------------------------------------------------------------------------- */
-  const appendWhatsappLink = (container, href, label) => {
-    const link = document.createElement('a');
-    link.href = href;
-    link.target = '_blank';
-    link.rel = 'noopener';
-    link.className = 'status-wa-link';
-    link.textContent = label;
-    container.appendChild(link);
-    return link;
-  };
-
   const registrationForm = document.getElementById('registrationForm');
   const regSuccessMsg = document.getElementById('regSuccessMsg');
 
   if (registrationForm && regSuccessMsg) {
-    registrationForm.addEventListener('submit', (e) => {
+    const submitButton = registrationForm.querySelector('button[type="submit"]');
+    const submitLabel = submitButton ? submitButton.textContent : '';
+
+    registrationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (registrationForm.querySelector('[name="botcheck"]')?.checked) return;
+
       const name = document.getElementById('regName')?.value.trim() || '';
       const phone = document.getElementById('regPhone')?.value.trim() || '';
       const email = document.getElementById('regEmail')?.value.trim() || '';
-      const course = document.getElementById('regCourse')?.value || '';
+      const courseSelect = document.getElementById('regCourse');
+      const course = courseSelect?.selectedOptions?.[0]?.textContent.trim() || courseSelect?.value || '';
       const role = document.getElementById('regRole')?.value || '';
       const message = document.getElementById('regMessage')?.value.trim() || '';
-      const text = [
-        'Bonjour Qué Rico MAMBO, je souhaite des informations / une inscription.',
-        `Nom : ${name}`,
-        `Téléphone : ${phone}`,
-        `Email : ${email}`,
-        `Cours : ${course}`,
-        `Rôle : ${role}`,
-        message ? `Message : ${message}` : '',
-      ].filter(Boolean).join('\n');
-      const href = whatsappUrl(text);
 
-      regSuccessMsg.replaceChildren();
-      const note = document.createElement('span');
-      note.textContent = `Merci ${name}. Votre demande pour « ${course} » n'est pas enregistrée automatiquement. Envoyez-la sur WhatsApp au ${WHATSAPP_DISPLAY} pour que Clémentine et Éric la reçoivent.`;
-      regSuccessMsg.appendChild(note);
-      appendWhatsappLink(regSuccessMsg, href, 'Ouvrir WhatsApp');
-      regSuccessMsg.style.display = 'block';
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Envoi en cours…';
+      }
 
-      window.open(href, '_blank', 'noopener');
-      registrationForm.reset();
+      try {
+        await sendToInbox({
+          subject: `Inscription — ${course}`,
+          from_name: name,
+          name,
+          email,
+          phone,
+          cours: course,
+          role,
+          message: message || 'Aucun message',
+        });
+        registrationForm.reset();
+        showFormStatus(
+          regSuccessMsg,
+          `Merci ${name}. Ta demande pour « ${course} » est bien partie. Éric et Clémentine te recontactent à ${email} ou au ${phone}.`,
+          false
+        );
+      } catch (error) {
+        showFormStatus(
+          regSuccessMsg,
+          'L’envoi n’a pas abouti. Réessaie dans un instant, ou écris-nous sur WhatsApp au 07 61 46 18 92.',
+          true
+        );
+        console.error(error);
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = submitLabel;
+        }
+      }
     });
   }
 
   const newsletterForm = document.getElementById('newsletterForm');
   const newsletterFeedback = document.getElementById('newsletterFeedback');
   if (newsletterForm && newsletterFeedback) {
-    newsletterForm.addEventListener('submit', (e) => {
+    const submitButton = newsletterForm.querySelector('button[type="submit"]');
+    const submitLabel = submitButton ? submitButton.textContent : '';
+
+    newsletterForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (newsletterForm.querySelector('[name="botcheck"]')?.checked) return;
+
       const email = newsletterForm.querySelector('input[type="email"]')?.value.trim() || '';
-      const href = whatsappUrl(`Bonjour Qué Rico MAMBO, je souhaite recevoir les dates des soirées et des inscriptions. Email : ${email}`);
-      newsletterFeedback.replaceChildren();
-      const note = document.createElement('span');
-      note.textContent = `Merci. Ce formulaire n'alimente pas de liste automatique : confirmez ${email} sur WhatsApp pour recevoir les prochaines dates.`;
-      newsletterFeedback.appendChild(note);
-      appendWhatsappLink(newsletterFeedback, href, 'Confirmer sur WhatsApp');
-      newsletterFeedback.style.display = 'block';
-      window.open(href, '_blank', 'noopener');
-      newsletterForm.reset();
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Envoi…';
+      }
+
+      try {
+        await sendToInbox({
+          subject: 'Alerte soirées et inscriptions',
+          from_name: 'Site Qué Rico MAMBO',
+          name: 'Alerte site',
+          email,
+          message: 'Souhaite recevoir les dates des soirées, des stages et l’ouverture des inscriptions.',
+        });
+        newsletterForm.reset();
+        showFormStatus(
+          newsletterFeedback,
+          `C’est noté. La demande pour ${email} est bien partie.`,
+          false
+        );
+      } catch (error) {
+        showFormStatus(
+          newsletterFeedback,
+          'L’inscription n’a pas abouti. Réessaie dans un instant.',
+          true
+        );
+        console.error(error);
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = submitLabel;
+        }
+      }
     });
   }
 };

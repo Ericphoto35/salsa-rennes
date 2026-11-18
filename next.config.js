@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
-const QRM = 'https://www.quericomambo.fr';
+const to = (sources, destination) =>
+  sources.map((source) => ({ source, destination, permanent: true }));
 
 const nextConfig = {
   reactStrictMode: false,
@@ -33,84 +34,99 @@ const nextConfig = {
     ];
   },
 
-  // Migration définitive vers quericomambo.fr (permanent: true = HTTP 308).
-  // Les query strings sont préservées par Next.js.
-  // Viser toujours https://www.quericomambo.fr pour éviter une chaîne apex→www.
+  // Anciennes adresses du site Hostinger. permanent = HTTP 308.
+  // Le fragment (#section) fait défiler la page d'accueil au bon endroit.
   async redirects() {
     return [
-      // L'accueil sert le site statique (public/site) via middleware.
-      // Les anciennes URLs publiques restent redirigées.
-      {
-        source: '/inscription',
-        destination: `${QRM}/preinscriptions`,
-        permanent: true,
-      },
-      {
-        source: '/pourquoi-salsa',
-        destination: `${QRM}/quest-ce-que-la-salsa`,
-        permanent: true,
-      },
-      {
-        source: '/notre-communaute',
-        destination: `${QRM}/notre-compte-instagram`,
-        permanent: true,
-      },
-      {
-        source: '/mentions-legales',
-        destination: `${QRM}/politique-de-confidentialite`,
-        permanent: true,
-      },
-      {
-        source: '/politique-de-confidentialite',
-        destination: `${QRM}/politique-de-confidentialite`,
-        permanent: true,
-      },
-      {
-        source: '/niveaux/debutant',
-        destination: `${QRM}/cours-salsa-debutant-rennes`,
-        permanent: true,
-      },
-      {
-        source: '/niveaux/intermediaire',
-        destination: `${QRM}/cours-intermediaire-de-salsa`,
-        permanent: true,
-      },
-      {
-        source: '/niveaux/avance',
-        destination: `${QRM}/cours-inter-2`,
-        permanent: true,
-      },
-      {
-        source: '/sitemap.xml',
-        destination: `${QRM}/sitemap.xml`,
-        permanent: true,
-      },
-      {
-        source: '/login',
-        destination: `${QRM}/`,
-        permanent: true,
-      },
-      {
-        source: '/admin',
-        destination: `${QRM}/`,
-        permanent: true,
-      },
-      {
-        source: '/profile',
-        destination: `${QRM}/`,
-        permanent: true,
-      },
-      {
-        source: '/session-recovery',
-        destination: `${QRM}/`,
-        permanent: true,
-      },
+      ...to(
+        ['/inscription', '/preinscriptions'],
+        '/inscriptions-cours-de-salsa'
+      ),
+      ...to(
+        ['/niveaux/debutant', '/cours-salsa-debutant-rennes'],
+        '/inscriptions-cours-de-salsa#debutant'
+      ),
+      ...to(
+        ['/niveaux/intermediaire', '/cours-intermediaire-de-salsa'],
+        '/inscriptions-cours-de-salsa#inter-1'
+      ),
+      ...to(
+        [
+          '/niveaux/avance',
+          '/cours-inter-2',
+          '/cours-avance-rennes',
+          '/inscription-cours-avance',
+        ],
+        '/inscriptions-cours-de-salsa#inter-2'
+      ),
+      ...to(
+        [
+          '/les-cours',
+          '/footwork',
+          '/cours-de-lady-styling-salsa',
+          '/pourquoi-salsa',
+          '/quest-ce-que-la-salsa',
+          '/quest-ce-que-la-danse-salsa-',
+          '/differentes-salsa',
+        ],
+        '/#les-cours'
+      ),
+      ...to(['/tarifs'], '/#tarifs'),
+      ...to(['/planning-salsa-rennes'], '/#planning'),
+      ...to(['/professeurs-de-salsa-a-rennes'], '/#professeurs'),
+      ...to(
+        [
+          '/salsa-rennes',
+          '/boutique-qrm',
+          '/sac-fourre-tout-noir',
+          '/t-shirt-femme-logo-dos-dore-brillant-product',
+          '/t-shirt-homme-logo-dore-brillant-product',
+          '/rentree-salsa-202627',
+          '/rentree-salsa-2025-26',
+          '/infos-rentree-salsa-2023',
+          '/informations-importantes',
+          '/login',
+          '/admin',
+          '/profile',
+          '/session-recovery',
+        ],
+        '/'
+      ),
+      ...to(
+        [
+          '/notre-communaute',
+          '/notre-compte-instagram',
+          '/ou-danser-a-rennes',
+          '/swob',
+          '/salsa-nantes',
+          '/groovin90s-hip-hop-rnb',
+          '/rennes-loves-mambo',
+          '/rennes-loves-mambo-avec-timothe-et-helene-13juin',
+          '/3-heures-de-salsa-avec-ella-jauk-paris',
+          '/infos-breizh-loves-mambo',
+          '/breizh-loves-mambo',
+          '/alicia-velasco-a-rennes',
+          '/stage-de-salsa-avec-brandon',
+          '/cours-de-salsa-complets-2023',
+          '/festival-corazon-latino-2023',
+          '/soiree-salsa-rennes-ninkasi',
+          '/soiree-salsa-au-stadium',
+          '/soiree-salsa-bachata-au-stadium',
+          '/soiree-salsa-decembre-2025',
+          '/soiree-dintegration',
+          '/only-salsa-2024',
+          '/only-salsa-ile-de-re',
+          '/portes-ouvertes-salsa-rennes',
+          '/que-rico-mambo-portes-ouvertes-2024',
+          '/le-groupe-de-salsa-du-moment',
+        ],
+        '/#evenements'
+      ),
     ];
   },
 
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'maps.googleapis.com' },
       { protocol: 'https', hostname: 'placehold.co' },
     ],
   },

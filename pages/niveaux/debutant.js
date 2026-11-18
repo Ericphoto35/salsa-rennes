@@ -1,6 +1,5 @@
 import Seo from '../../components/Seo';
 import Navbar from '../../components/Navbar';
-import ProtectedRoute from '../../components/ProtectedRoute';
 
 const videos = [
   { id: '1', title: 'Pas de base salsa', url: 'https://www.youtube.com/embed/x4hozdO1YKo' },
@@ -9,7 +8,6 @@ const videos = [
 
 export default function Debutant() {
   return (
-    <ProtectedRoute>
       <div className="min-h-screen bg-[#2b2b2b]">
         <Seo
           title="Niveau Débutant - Salsa Rennes"
@@ -47,6 +45,5 @@ export default function Debutant() {
           </div>
         </main>
       </div>
-    </ProtectedRoute>
   );
 }

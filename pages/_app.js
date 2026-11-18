@@ -1,5 +1,4 @@
 import '../styles/globals.css'
-import { AuthProvider } from '../contexts/AuthContext'
 import CookieConsentBanner from '../components/CookieConsent'
 import { useEffect, useState } from 'react'
 import { Poppins, Bodoni_Moda, Manrope, JetBrains_Mono } from 'next/font/google'
@@ -43,10 +42,8 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <div className={`${poppins.variable} ${bodoni.variable} ${manrope.variable} ${jetbrains.variable}`}>
-      <AuthProvider>
-        <Component {...pageProps} />
-        {showCookieBanner && <CookieConsentBanner />}
-      </AuthProvider>
+      <Component {...pageProps} />
+      {showCookieBanner && <CookieConsentBanner />}
     </div>
   )
 }

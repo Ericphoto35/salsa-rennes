@@ -3,9 +3,6 @@ import Seo from '../components/Seo';
 import Navbar from '../components/Navbar';
 
 export default function PolitiqueConfidentialite() {
-  // TODO: Implement actual authentication logic
-  const isLoggedIn = false;
-
   return (
     <div className="min-h-screen bg-[#2b2b2b]">
       <Seo
@@ -15,7 +12,7 @@ export default function PolitiqueConfidentialite() {
         image="/images/logo.png"
       />
 
-      <Navbar isLoggedIn={isLoggedIn} />
+      <Navbar />
 
       <main className="container mx-auto px-4 py-20 md:py-24 text-white max-w-4xl">
         <h1 className="text-4xl font-bold mb-8 text-[#f6bc7c]">Politique de Confidentialité</h1>

@@ -1,6 +1,5 @@
 import Seo from '../../components/Seo';
 import Navbar from '../../components/Navbar';
-import ProtectedRoute from '../../components/ProtectedRoute';
 
 const videos = [
   { id: '1', title: 'Figures intermédiaires', url: 'https://www.youtube.com/embed/Q-BGFOCdYnc' },
@@ -10,7 +9,6 @@ const videos = [
 
 export default function Intermediaire() {
   return (
-    <ProtectedRoute>
       <div className="min-h-screen bg-[#2b2b2b]">
         <Seo
           title="Niveau Intermédiaire - Salsa Rennes"
@@ -48,6 +46,5 @@ export default function Intermediaire() {
           </div>
         </main>
       </div>
-    </ProtectedRoute>
   );
 }
