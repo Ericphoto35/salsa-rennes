@@ -1,18 +1,14 @@
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import Seo from '../components/Seo';
 import BreadcrumbSchema from '../components/BreadcrumbSchema';
 import { FaInstagram } from 'react-icons/fa';
 
-export default function NotreCommunaute({ initialPosts, isUsingMockData, apiError }) {
-  const [posts, setPosts] = useState(initialPosts || []);
-  const [loading, setLoading] = useState(!initialPosts);
-  const [error, setError] = useState('');
-  const [usingMockData, setUsingMockData] = useState(isUsingMockData);
-  const [apiErrorState, setApiErrorState] = useState(apiError || null);
+const posts = getMockPosts();
 
+export default function NotreCommunaute() {
   // Fonction pour formater la date
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
@@ -74,47 +70,9 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
             <FaInstagram className="text-base" />
             Suivez-nous sur Instagram
           </a>
-
-          {usingMockData && (
-            <div className="mt-5 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 py-2.5 px-5 rounded-xl inline-block">
-              <p className="text-sm font-medium">
-                Mode démo : affichage de données fictives.
-              </p>
-              {apiErrorState && (
-                <p className="text-sm mt-1 text-red-400">
-                  Erreur : {typeof apiErrorState === 'string' ? apiErrorState : JSON.stringify(apiErrorState)}
-                </p>
-              )}
-              {!apiErrorState && (
-                <p className="text-sm mt-1 text-yellow-400/70">
-                  Pour voir vos vraies publications Instagram, configurez votre token d&apos;accès.
-                </p>
-              )}
-            </div>
-          )}
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#f6bc7c]"></div>
-          </div>
-        ) : error ? (
-          <div className="bg-red-500/10 text-red-500 p-4 rounded-lg text-center max-w-md mx-auto">
-            <p>{error}</p>
-            <p className="mt-2">
-              En attendant, vous pouvez consulter notre profil Instagram directement{' '}
-              <a
-                href="https://www.instagram.com/quericomambo_salsa"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-white"
-              >
-                ici
-              </a>.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {posts.map((post) => (
               <div key={post.id} className="group bg-[#1e1e1e] border border-white/7 rounded-2xl overflow-hidden hover:border-[#f6bc7c]/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40">
                 <a
@@ -155,12 +113,11 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
                 </div>
               </div>
             ))}
-          </div>
-        )}
+        </div>
 
-        {!loading && !error && posts.length === 0 && (
+        {posts.length === 0 && (
           <div className="text-center text-white/70 py-12">
-            <p>Aucune publication Instagram n'a été trouvée.</p>
+            <p>{"Aucune publication Instagram n'a été trouvée."}</p>
             <p className="mt-2">
               Consultez notre profil Instagram{' '}
               <a
@@ -183,79 +140,19 @@ export default function NotreCommunaute({ initialPosts, isUsingMockData, apiErro
             Suivez-nous sur Instagram pour découvrir nos événements, cours et soirées salsa à Rennes.
             Partagez vos moments de danse avec le hashtag <span className="text-[#f6bc7c]">#SalsaRennes</span> !
           </p>
-          <a
+          <Link
             href="/inscription"
             className="inline-flex items-center gap-2 bg-gradient-to-r from-[#f6bc7c] to-[#e8a254] text-[#121212] px-8 py-3.5 rounded-full font-bold hover:shadow-lg hover:shadow-[#f6bc7c]/25 transition-all duration-300 hover:scale-105"
           >
             Rejoindre nos cours
-          </a>
+          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-// Cette fonction s'exécute côté serveur à chaque requête
-export async function getServerSideProps() {
-  try {
-    // Récupération des publications Instagram depuis notre API interne
-    // Cette API gère l'authentification et le cache
-    // En développement, utiliser directement localhost
-    let apiUrl;
-    if (process.env.NODE_ENV === 'development') {
-      apiUrl = 'http://localhost:3000/api/instagram/posts';
-    } else {
-      const protocol = 'https';
-      const host = process.env.VERCEL_URL || 'www.salsarennes.fr';
-      apiUrl = `${protocol}://${host}/api/instagram/posts`;
-    }
-
-    console.log('Débogage Notre Communauté - URL API:', apiUrl);
-    const response = await fetch(apiUrl);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Erreur lors de la récupération des publications Instagram:', errorText);
-      throw new Error('Erreur lors de la récupération des publications Instagram');
-    }
-
-    const data = await response.json();
-    console.log('Débogage Notre Communauté - Réponse API:', JSON.stringify(data).substring(0, 200) + '...');
-
-    // Si l'API renvoie une erreur, utiliser des données fictives
-    if (data.error) {
-      console.warn('Utilisation de données fictives car l\'API a renvoyé une erreur:', data.error);
-      return {
-        props: {
-          initialPosts: getMockPosts(),
-          isUsingMockData: true,
-          apiError: data.error // Ajouter l'erreur pour l'afficher sur la page
-        }
-      };
-    }
-
-    // Vérifier si nous avons des publications
-    console.log('Débogage Notre Communauté - Nombre de publications:', data.posts ? data.posts.length : 0);
-
-    return {
-      props: {
-        initialPosts: data.posts || [],
-        isUsingMockData: false
-      }
-    };
-  } catch (error) {
-    console.error('Error fetching Instagram posts:', error);
-    // En cas d'erreur, utiliser des données fictives
-    return {
-      props: {
-        initialPosts: getMockPosts(),
-        isUsingMockData: true
-      }
-    };
-  }
-}
-
-// Fonction pour générer des données fictives
+// Aperçus statiques, sans appel à une API.
 function getMockPosts() {
   return [
     {

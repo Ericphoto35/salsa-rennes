@@ -10,6 +10,9 @@
 :root {
   /* Legacy (kept for other pages) */
   --font-poppins: 'Poppins', system-ui, sans-serif;
+  --font-bodoni: 'Times New Roman', serif;
+  --font-manrope: system-ui, sans-serif;
+  --font-jetbrains: ui-monospace, monospace;
   --surface: #1e1e1e;
   --elevated: #272727;
 
